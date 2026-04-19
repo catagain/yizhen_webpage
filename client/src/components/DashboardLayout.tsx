@@ -19,7 +19,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import {
   BarChart3,
@@ -73,7 +72,7 @@ export default function DashboardLayout({
             <Button
               className="mt-8 h-12 rounded-none border border-foreground px-6 text-sm font-bold tracking-[0.18em] uppercase"
               onClick={() => {
-                window.location.href = getLoginUrl();
+                window.location.href = "/login";
               }}
             >
               立即登入
@@ -153,7 +152,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
                   <p className="truncate text-sm font-bold">{user?.name || "未命名使用者"}</p>
                   <p className="mt-1 truncate text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {user?.email || "MANUS OAUTH"}
+                    {user?.email || "PASSWORD LOGIN"}
                   </p>
                 </div>
               </button>

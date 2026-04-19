@@ -13,11 +13,11 @@ describe("client costing helpers", () => {
     expect(rows.every(row => row.workerId === null)).toBe(true);
   });
 
-  it("creates a default monthly report with editable in-house cost", () => {
+  it("creates a default monthly report without in-house processing fields", () => {
     const report = createEmptyMonthlyReport("2026-04");
     expect(report.monthKey).toBe("2026-04");
-    expect(report.inHouseUnitCost).toBe(50000);
     expect(report.processingEntries).toHaveLength(4);
+    expect("inHouseUnitCost" in report).toBe(false);
   });
 
   it("computes live metrics for the monthly report form", () => {
@@ -31,8 +31,6 @@ describe("client costing helpers", () => {
       shipmentAmount: 300000,
       flatbedFreight: 12000,
       craneFreight: 8000,
-      inHouseHeadcount: 1,
-      inHouseUnitCost: 40000,
       note: "",
       processingEntries: [
         {
@@ -69,13 +67,12 @@ describe("client costing helpers", () => {
     expect(metrics.purchaseWeightTons).toBe(8);
     expect(metrics.shipmentWeightTons).toBe(10);
     expect(metrics.processingSubtotal).toBe(32000);
-    expect(metrics.inHouseProcessingFee).toBe(40000);
-    expect(metrics.totalProcessingFee).toBe(72000);
+    expect(metrics.totalProcessingFee).toBe(32000);
     expect(metrics.totalFreight).toBe(20000);
-    expect(metrics.salesCost).toBe(92000);
-    expect(metrics.shipmentUnitPrice).toBe(4800);
-    expect(metrics.grossProfitPerTon).toBe(-15200);
-    expect(metrics.netProfit).toBe(-152000);
+    expect(metrics.salesCost).toBe(52000);
+    expect(metrics.shipmentUnitPrice).toBe(8800);
+    expect(metrics.grossProfitPerTon).toBe(-11200);
+    expect(metrics.netProfit).toBe(-112000);
   });
 
   it("formats month labels for display", () => {

@@ -23,8 +23,6 @@ describe("costing helpers", () => {
       flatbedFreight: 10000,
       craneFreight: 5000,
       selfHaulFreight: 0,
-      inHouseHeadcount: 2,
-      inHouseUnitCost: 45000,
       processingEntries: [
         {
           workerId: 1,
@@ -48,12 +46,11 @@ describe("costing helpers", () => {
     expect(result.purchaseCostPerTon).toBe(20000);
     expect(result.totalFreight).toBe(15000);
     expect(result.processingSubtotal).toBe(48000);
-    expect(result.inHouseProcessingFee).toBe(90000);
-    expect(result.totalProcessingFee).toBe(138000);
-    expect(result.salesCost).toBe(153000);
-    expect(result.shipmentUnitPrice).toBe(583.333);
-    expect(result.grossProfitPerTon).toBe(-19416.667);
-    expect(result.netProfit).toBe(-233000.004);
+    expect(result.totalProcessingFee).toBe(48000);
+    expect(result.salesCost).toBe(63000);
+    expect(result.shipmentUnitPrice).toBe(8083.333);
+    expect(result.grossProfitPerTon).toBe(-11916.667);
+    expect(result.netProfit).toBe(-143000.004);
     expect(result.processingEntries[0]?.unitPricePerTon).toBe(10000);
     expect(result.processingEntries[1]?.unitPricePerTon).toBe(9000);
   });

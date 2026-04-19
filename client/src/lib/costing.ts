@@ -18,8 +18,6 @@ export type MonthlyReportFormValues = {
   shipmentAmount: number;
   flatbedFreight: number;
   craneFreight: number;
-  inHouseHeadcount: number;
-  inHouseUnitCost: number;
   note: string;
   processingEntries: WorkerFormRow[];
 };
@@ -46,8 +44,7 @@ export function computeMonthlyMetrics(values: MonthlyReportFormValues) {
   const processingSubtotal = roundToThree(
     processingEntries.reduce((sum, entry) => sum + entry.feeAmount, 0)
   );
-  const inHouseProcessingFee = roundToThree(values.inHouseHeadcount * values.inHouseUnitCost);
-  const totalProcessingFee = roundToThree(processingSubtotal + inHouseProcessingFee);
+  const totalProcessingFee = roundToThree(processingSubtotal);
   const totalFreight = roundToThree(values.flatbedFreight + values.craneFreight);
   const salesCost = roundToThree(totalFreight + totalProcessingFee);
   const purchaseCostPerTon =
@@ -64,7 +61,6 @@ export function computeMonthlyMetrics(values: MonthlyReportFormValues) {
     shipmentWeightTons,
     purchaseCostPerTon,
     processingSubtotal,
-    inHouseProcessingFee,
     totalProcessingFee,
     totalFreight,
     salesCost,
@@ -96,8 +92,6 @@ export function createEmptyMonthlyReport(monthKey: string): MonthlyReportFormVal
     shipmentAmount: 0,
     flatbedFreight: 0,
     craneFreight: 0,
-    inHouseHeadcount: 0,
-    inHouseUnitCost: 50000,
     note: "",
     processingEntries: createEmptyProcessingEntries(),
   };

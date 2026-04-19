@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import AnnualOverviewPage from "@/pages/AnnualOverviewPage";
 import Home from "@/pages/Home";
+import LoginPage from "@/pages/LoginPage";
 import ReportsPage from "@/pages/ReportsPage";
 import MonthlyReportPage from "@/pages/MonthlyReportPage";
 import WorkerDirectoryPage from "@/pages/WorkerDirectoryPage";
@@ -18,6 +19,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Switch>
+      <Route path="/login" component={LoginPage} />
       <Route path="/">
         <AppShell>
           <Home />

@@ -24,6 +24,11 @@ export type SessionPayload = {
   name: string;
 };
 
+const LOCAL_LOGIN_USERNAME = "yizhen123";
+const LOCAL_LOGIN_OPEN_ID = "local:yizhen123";
+const LOCAL_LOGIN_NAME = "YIZHEN";
+const LOCAL_LOGIN_EMAIL = "yizhen123";
+
 const EXCHANGE_TOKEN_PATH = `/webdev.v1.WebDevAuthPublicService/ExchangeToken`;
 const GET_USER_INFO_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfo`;
 const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfoWithJwt`;
@@ -84,11 +89,18 @@ const createOAuthHttpClient = (): AxiosInstance =>
 
 class SDKServer {
   private readonly client: AxiosInstance;
-  private readonly oauthService: OAuthService;
+  private oauthService: OAuthService | null = null;
 
   constructor(client: AxiosInstance = createOAuthHttpClient()) {
     this.client = client;
-    this.oauthService = new OAuthService(this.client);
+  }
+
+  private getOAuthService() {
+    if (!this.oauthService) {
+      this.oauthService = new OAuthService(this.client);
+    }
+
+    return this.oauthService;
   }
 
   private deriveLoginMethod(
@@ -122,7 +134,7 @@ class SDKServer {
     code: string,
     state: string
   ): Promise<ExchangeTokenResponse> {
-    return this.oauthService.getTokenByCode(code, state);
+    return this.getOAuthService().getTokenByCode(code, state);
   }
 
   /**
@@ -131,7 +143,7 @@ class SDKServer {
    * const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
    */
   async getUserInfo(accessToken: string): Promise<GetUserInfoResponse> {
-    const data = await this.oauthService.getUserInfoByToken({
+    const data = await this.getOAuthService().getUserInfoByToken({
       accessToken,
     } as ExchangeTokenResponse);
     const loginMethod = this.deriveLoginMethod(
@@ -257,7 +269,6 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<User> {
-    // Regular authentication flow
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
     const session = await this.verifySession(sessionCookie);
@@ -266,39 +277,36 @@ class SDKServer {
       throw ForbiddenError("Invalid session cookie");
     }
 
-    const sessionUserId = session.openId;
-    const signedInAt = new Date();
-    let user = await db.getUserByOpenId(sessionUserId);
-
-    // If user not in DB, sync from OAuth server automatically
-    if (!user) {
-      try {
-        const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
-        await db.upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt,
-        });
-        user = await db.getUserByOpenId(userInfo.openId);
-      } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
-      }
+    if (session.openId !== LOCAL_LOGIN_OPEN_ID) {
+      throw ForbiddenError("Unsupported session user");
     }
+
+    const signedInAt = new Date();
+
+    await db.upsertUser({
+      openId: LOCAL_LOGIN_OPEN_ID,
+      name: LOCAL_LOGIN_NAME,
+      email: LOCAL_LOGIN_EMAIL,
+      loginMethod: "password",
+      role: "admin",
+      lastSignedIn: signedInAt,
+    });
+
+    const user = await db.getUserByOpenId(LOCAL_LOGIN_OPEN_ID);
 
     if (!user) {
       throw ForbiddenError("User not found");
     }
 
-    await db.upsertUser({
-      openId: user.openId,
-      lastSignedIn: signedInAt,
-    });
-
     return user;
   }
 }
+
+export const localPasswordAuth = {
+  username: LOCAL_LOGIN_USERNAME,
+  password: "1234",
+  openId: LOCAL_LOGIN_OPEN_ID,
+  displayName: LOCAL_LOGIN_NAME,
+};
 
 export const sdk = new SDKServer();

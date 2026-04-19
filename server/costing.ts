@@ -20,8 +20,6 @@ export type MonthlyReportCalculationInput = {
   flatbedFreight: number;
   craneFreight: number;
   selfHaulFreight?: number;
-  inHouseHeadcount: number;
-  inHouseUnitCost: number;
   processingEntries: ProcessingEntryInput[];
 };
 
@@ -35,7 +33,6 @@ export type MonthlyReportMetrics = {
   purchaseCostPerTon: number;
   totalFreight: number;
   processingSubtotal: number;
-  inHouseProcessingFee: number;
   totalProcessingFee: number;
   salesCost: number;
   shipmentUnitPrice: number;
@@ -82,8 +79,6 @@ export function computeMonthlyReportMetrics(
   const flatbedFreight = normalizeNumber(input.flatbedFreight);
   const craneFreight = normalizeNumber(input.craneFreight);
   const selfHaulFreight = normalizeNumber(input.selfHaulFreight ?? 0);
-  const inHouseHeadcount = Math.max(0, Math.trunc(normalizeNumber(input.inHouseHeadcount)));
-  const inHouseUnitCost = normalizeNumber(input.inHouseUnitCost);
 
   const processingEntries = input.processingEntries.map(entry => {
     const processingWeightTons = roundToThree(normalizeNumber(entry.processingWeightTons));
@@ -104,8 +99,7 @@ export function computeMonthlyReportMetrics(
   const processingSubtotal = roundToThree(
     processingEntries.reduce((sum, entry) => sum + entry.feeAmount, 0)
   );
-  const inHouseProcessingFee = roundToThree(inHouseHeadcount * inHouseUnitCost);
-  const totalProcessingFee = roundToThree(processingSubtotal + inHouseProcessingFee);
+  const totalProcessingFee = roundToThree(processingSubtotal);
   const totalFreight = roundToThree(flatbedFreight + craneFreight + selfHaulFreight);
   const salesCost = roundToThree(totalFreight + totalProcessingFee);
   const purchaseCostPerTon =
@@ -123,7 +117,6 @@ export function computeMonthlyReportMetrics(
     purchaseCostPerTon,
     totalFreight,
     processingSubtotal,
-    inHouseProcessingFee,
     totalProcessingFee,
     salesCost,
     shipmentUnitPrice,

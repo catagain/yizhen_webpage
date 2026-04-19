@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
+  deleteMonthlyReport,
   getAnnualSummary,
   getMonthlyReportById,
   getMonthlyReportByMonthKey,
@@ -29,8 +30,6 @@ const saveMonthlyReportSchema = z.object({
   shipmentAmount: z.number().min(0),
   flatbedFreight: z.number().min(0),
   craneFreight: z.number().min(0),
-  inHouseHeadcount: z.number().int().min(0),
-  inHouseUnitCost: z.number().min(0),
   note: z.string().max(5000).optional().default(""),
   processingEntries: z.array(processingEntrySchema).max(4),
 });
@@ -79,6 +78,16 @@ export const costingRouter = router({
         ...input,
         actorUserId: ctx.user.id,
       });
+    }),
+
+  deleteReport: protectedProcedure
+    .input(
+      z.object({
+        id: z.number().int().positive(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return deleteMonthlyReport(input.id);
     }),
 
   annualSummary: protectedProcedure

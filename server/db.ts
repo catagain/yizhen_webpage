@@ -195,8 +195,6 @@ export type SaveMonthlyReportInput = {
   shipmentAmount: number;
   flatbedFreight: number;
   craneFreight: number;
-  inHouseHeadcount: number;
-  inHouseUnitCost: number;
   note?: string;
   processingEntries: ProcessingEntryInput[];
   actorUserId?: number | null;
@@ -218,8 +216,6 @@ export async function saveMonthlyReport(input: SaveMonthlyReportInput) {
     flatbedFreight: input.flatbedFreight,
     craneFreight: input.craneFreight,
     selfHaulFreight: 0,
-    inHouseHeadcount: input.inHouseHeadcount,
-    inHouseUnitCost: input.inHouseUnitCost,
     processingEntries: input.processingEntries,
   });
 
@@ -243,8 +239,8 @@ export async function saveMonthlyReport(input: SaveMonthlyReportInput) {
       flatbedFreight: toDbDecimal(input.flatbedFreight),
       craneFreight: toDbDecimal(input.craneFreight),
       selfHaulFreight: toDbDecimal(0),
-      inHouseHeadcount: input.inHouseHeadcount,
-      inHouseUnitCost: toDbDecimal(input.inHouseUnitCost),
+      inHouseHeadcount: 0,
+      inHouseUnitCost: toDbDecimal(0),
       note: input.note?.trim() || null,
       updatedByUserId: input.actorUserId ?? null,
     };
@@ -343,8 +339,6 @@ function composeReportPayload(report: MonthlyReport, entries: typeof processingE
     flatbedFreight: base.flatbedFreight,
     craneFreight: base.craneFreight,
     selfHaulFreight: base.selfHaulFreight,
-    inHouseHeadcount: base.inHouseHeadcount,
-    inHouseUnitCost: base.inHouseUnitCost,
     processingEntries: mappedEntries,
   } satisfies MonthlyReportCalculationInput);
 
@@ -435,6 +429,20 @@ export async function listMonthlyReports(year?: number) {
   }
 
   return reportRows.map(report => composeReportPayload(report, entryMap.get(report.id) ?? []));
+}
+
+export async function deleteMonthlyReport(reportId: number) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.transaction(async tx => {
+    await tx.delete(processingEntries).where(eq(processingEntries.reportId, reportId));
+    await tx.delete(monthlyReports).where(eq(monthlyReports.id, reportId));
+  });
+
+  return { success: true } as const;
 }
 
 export async function getAnnualSummary(year: number) {

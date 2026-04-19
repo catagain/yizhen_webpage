@@ -48,9 +48,9 @@ describe("costing helpers", () => {
     expect(result.processingSubtotal).toBe(48000);
     expect(result.totalProcessingFee).toBe(48000);
     expect(result.salesCost).toBe(63000);
-    expect(result.shipmentUnitPrice).toBe(8083.333);
-    expect(result.grossProfitPerTon).toBe(-11916.667);
-    expect(result.netProfit).toBe(-143000.004);
+    expect(result.shipmentUnitPrice).toBe(24750);
+    expect(result.grossProfitPerTon).toBe(4750);
+    expect(result.netProfit).toBe(57000);
     expect(result.processingEntries[0]?.unitPricePerTon).toBe(10000);
     expect(result.processingEntries[1]?.unitPricePerTon).toBe(9000);
   });

@@ -164,7 +164,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
               <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground">Monthly Report Editor</p>
               <CardTitle className="text-4xl font-black tracking-tight">{formatMonthLabel(monthKey)}</CardTitle>
               <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-                進貨、出貨、運費、加工與結果五大區塊會即時計算。加工區現在只保留四組鐵工明細，自家欄位已移除。
+                進貨、出貨、運費、加工與結果五大區塊會即時計算。加工區現在只保留四組鐵工明細，並新增每筆加工均價唯讀欄位；自家欄位已移除。
               </p>
             </div>
             <div className="flex flex-wrap gap-2 print:hidden">
@@ -239,10 +239,6 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">出貨總金額</label>
                   <Input value={form.shipmentAmount} onChange={event => updateField("shipmentAmount", numberFromInput(event.target.value))} className="rounded-none" inputMode="decimal" />
                 </div>
-                <div className="border border-border bg-muted p-4 md:col-span-3">
-                  <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">換算後出貨噸數</p>
-                  <p className="mt-3 text-lg font-black tracking-tight">{formatNumber(metrics.shipmentWeightTons)} 噸</p>
-                </div>
               </CardContent>
             </Card>
 
@@ -276,7 +272,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
                 {form.processingEntries.map((entry, index) => (
-                  <div key={index} className="grid gap-4 border border-border p-4 md:grid-cols-[1.1fr_0.9fr_0.9fr_0.8fr]">
+                  <div key={index} className="grid gap-4 border border-border p-4 md:grid-cols-[1.05fr_0.95fr_0.85fr_0.8fr_0.85fr]">
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">鐵工 {index + 1}</label>
                       <select
@@ -310,6 +306,10 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                       <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">費用</label>
                       <Input value={entry.feeAmount} onChange={event => updateProcessingEntry(index, current => ({ ...current, feeAmount: numberFromInput(event.target.value) }))} className="rounded-none" inputMode="decimal" />
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">均價</label>
+                      <Input value={formatNumber(metrics.processingEntries[index]?.unitPricePerTon ?? 0)} readOnly className="rounded-none bg-muted" />
+                    </div>
                   </div>
                 ))}
                 <div className="border border-border bg-muted p-4">
@@ -326,9 +326,9 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                 <CardTitle className="text-xl font-black">結果</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 pt-6">
-                <MetricBox label="銷貨成本" value={formatCurrency(metrics.salesCost)} />
-                <MetricBox label="出貨每噸均價" value={`${formatNumber(metrics.shipmentUnitPrice)} 元/噸`} />
-                <MetricBox label="毛利" value={`${formatNumber(metrics.grossProfitPerTon)} 元/噸`} />
+                <MetricBox label="銷貨成本" value={formatCurrency(metrics.salesCost)} description="計算式為總運費 + 總加工費" />
+                <MetricBox label="出貨每噸均價" value={`${formatNumber(metrics.shipmentUnitPrice)} 元/噸`} description="計算式為（出貨總金額 - 總加工費 - 總運費）/ 出貨數量" />
+                <MetricBox label="毛利" value={`${formatNumber(metrics.grossProfitPerTon)} 元/噸`} description="計算式為出貨每噸均價 - 進貨每噸均價" />
                 <MetricBox label="本月利潤" value={formatCurrency(metrics.netProfit)} />
               </CardContent>
             </Card>
@@ -360,8 +360,8 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
             <MetricPrint label="本月利潤" value={formatCurrency(metrics.netProfit)} />
           </div>
           <div className="mt-8 border-t border-black pt-6 text-sm leading-7">
-            <p>出貨每噸均價：{formatNumber(metrics.shipmentUnitPrice)} 元/噸</p>
-            <p>毛利：{formatNumber(metrics.grossProfitPerTon)} 元/噸</p>
+            <p>出貨每噸均價：{formatNumber(metrics.shipmentUnitPrice)} 元/噸（計算式為：出貨總金額 - 總加工費 - 總運費，再除以出貨數量）</p>
+            <p>毛利：{formatNumber(metrics.grossProfitPerTon)} 元/噸（計算式為：出貨每噸均價 - 進貨每噸均價）</p>
             <p>加工費由四組鐵工明細加總，不再包含自家欄位。</p>
             <p>備註：{form.note || "—"}</p>
           </div>
@@ -371,11 +371,12 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
   );
 }
 
-function MetricBox({ label, value }: { label: string; value: string }) {
+function MetricBox({ label, value, description }: { label: string; value: string; description?: string }) {
   return (
     <div className="border border-border bg-muted p-4">
       <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
       <p className="mt-3 text-2xl font-black tracking-tight">{value}</p>
+      {description ? <p className="mt-2 text-xs leading-6 text-muted-foreground">{description}</p> : null}
     </div>
   );
 }

@@ -70,9 +70,11 @@ describe("client costing helpers", () => {
     expect(metrics.totalProcessingFee).toBe(32000);
     expect(metrics.totalFreight).toBe(20000);
     expect(metrics.salesCost).toBe(52000);
-    expect(metrics.shipmentUnitPrice).toBe(8800);
-    expect(metrics.grossProfitPerTon).toBe(-11200);
-    expect(metrics.netProfit).toBe(-112000);
+    expect(metrics.shipmentUnitPrice).toBe(24800);
+    expect(metrics.grossProfitPerTon).toBe(4800);
+    expect(metrics.netProfit).toBe(48000);
+    expect(metrics.processingEntries[0]?.unitPricePerTon).toBe(10000);
+    expect(metrics.processingEntries[1]?.unitPricePerTon).toBe(8000);
   });
 
   it("formats month labels for display", () => {

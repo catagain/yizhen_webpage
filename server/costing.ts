@@ -106,7 +106,7 @@ export function computeMonthlyReportMetrics(
     purchaseWeightTons > 0 ? roundToThree(purchaseAmount / purchaseWeightTons) : 0;
   const shipmentUnitPrice =
     shipmentWeightTons > 0
-      ? roundToThree((shipmentAmount - purchaseAmount - salesCost) / shipmentWeightTons)
+      ? roundToThree((shipmentAmount - totalProcessingFee - totalFreight) / shipmentWeightTons)
       : 0;
   const grossProfitPerTon = roundToThree(shipmentUnitPrice - purchaseCostPerTon);
   const netProfit = roundToThree(grossProfitPerTon * shipmentWeightTons);

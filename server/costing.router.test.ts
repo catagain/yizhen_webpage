@@ -45,6 +45,51 @@ function createContext(): TrpcContext {
 }
 
 describe("costing router", () => {
+  it("accepts decimal values when saving a monthly report", async () => {
+    const caller = appRouter.createCaller(createContext());
+
+    await caller.costing.saveReport({
+      monthKey: "2026-04",
+      purchaseQuantity: 8.125,
+      purchaseUnit: "ton",
+      purchaseAmount: 160000.75,
+      shipmentQuantity: 7.5,
+      shipmentUnit: "ton",
+      shipmentAmount: 280000.5,
+      flatbedFreight: 12000.25,
+      craneFreight: 8000.5,
+      note: "decimal save",
+      processingEntries: [
+        {
+          workerId: 1,
+          workerNameSnapshot: "吳秋貴",
+          processingWeightTons: 2.25,
+          feeAmount: 20500.75,
+          sortOrder: 0,
+        },
+        {
+          workerId: 2,
+          workerNameSnapshot: "黃鬆翰",
+          processingWeightTons: 1.5,
+          feeAmount: 13200.5,
+          sortOrder: 1,
+        },
+      ],
+    });
+
+    expect(dbMocks.saveMonthlyReportMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actorUserId: 1,
+        purchaseQuantity: 8.125,
+        purchaseAmount: 160000.75,
+        shipmentQuantity: 7.5,
+        shipmentAmount: 280000.5,
+        flatbedFreight: 12000.25,
+        craneFreight: 8000.5,
+      })
+    );
+  });
+
   it("deletes a monthly report through the protected mutation", async () => {
     const caller = appRouter.createCaller(createContext());
 

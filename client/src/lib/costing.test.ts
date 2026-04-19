@@ -4,6 +4,7 @@ import {
   createEmptyMonthlyReport,
   createEmptyProcessingEntries,
   formatMonthLabel,
+  sanitizeDecimalInput,
 } from "./costing";
 
 describe("client costing helpers", () => {
@@ -75,6 +76,12 @@ describe("client costing helpers", () => {
     expect(metrics.netProfit).toBe(48000);
     expect(metrics.processingEntries[0]?.unitPricePerTon).toBe(10000);
     expect(metrics.processingEntries[1]?.unitPricePerTon).toBe(8000);
+  });
+
+  it("sanitizes decimal input text without removing decimal points", () => {
+    expect(sanitizeDecimalInput("12.34")).toBe("12.34");
+    expect(sanitizeDecimalInput("1,234.56")).toBe("1234.56");
+    expect(sanitizeDecimalInput("abc9.8元")).toBe("9.8");
   });
 
   it("formats month labels for display", () => {

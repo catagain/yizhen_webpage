@@ -22,6 +22,10 @@ export type MonthlyReportFormValues = {
   processingEntries: WorkerFormRow[];
 };
 
+export function sanitizeDecimalInput(value: string): string {
+  return value.replace(/[^0-9.-]/g, "");
+}
+
 export function roundToThree(value: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.round((value + Number.EPSILON) * 1000) / 1000;

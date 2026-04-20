@@ -29,6 +29,12 @@ function formatRate(value: number | null) {
   return `${value.toFixed(3)}%`;
 }
 
+export function formatChartYAxisTick(value: number) {
+  return `${value / 10000}萬`;
+}
+
+export const NET_PROFIT_Y_AXIS_TICKS = [1000000, 3000000, 5000000, 7000000, 9000000] as const;
+
 export default function AnnualOverviewPage() {
   const [year, setYear] = useState(() => new Date().getFullYear());
   const annualSummaryQuery = trpc.costing.annualSummary.useQuery({ year });
@@ -120,7 +126,12 @@ export default function AnnualOverviewPage() {
               <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="2 2" stroke="var(--color-grid)" />
                 <XAxis dataKey="monthKey" stroke="var(--color-muted-foreground)" />
-                <YAxis stroke="var(--color-muted-foreground)" />
+                <YAxis
+                  stroke="var(--color-muted-foreground)"
+                  domain={[0, 10000000]}
+                  ticks={[...NET_PROFIT_Y_AXIS_TICKS]}
+                  tickFormatter={formatChartYAxisTick}
+                />
                 <Tooltip
                   cursor={{ fill: "var(--color-muted)" }}
                   contentStyle={{

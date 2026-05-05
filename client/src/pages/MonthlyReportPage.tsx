@@ -10,6 +10,7 @@ import {
   sanitizeDecimalInput,
   type MonthlyReportFormValues,
 } from "@/lib/costing";
+import { REPORT_INPUT_CLASS_NAME, REPORT_SELECT_CLASS_NAME } from "@/lib/reportInputStyles";
 import { trpc } from "@/lib/trpc";
 import { ArrowLeft, Printer, Save, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -248,18 +249,18 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
               <CardContent className="grid gap-4 pt-6 md:grid-cols-3">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">進貨數量</label>
-                  <DecimalInput value={form.purchaseQuantity} onValueChange={value => updateField("purchaseQuantity", value)} className="rounded-none" />
+                  <DecimalInput value={form.purchaseQuantity} onValueChange={value => updateField("purchaseQuantity", value)} className={REPORT_INPUT_CLASS_NAME} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">單位</label>
-                  <select value={form.purchaseUnit} onChange={event => updateField("purchaseUnit", event.target.value as "ton" | "kg")} className="h-10 w-full rounded-none border border-input bg-background px-3 text-sm">
+                  <select value={form.purchaseUnit} onChange={event => updateField("purchaseUnit", event.target.value as "ton" | "kg")} className={REPORT_SELECT_CLASS_NAME}>
                     <option value="ton">噸</option>
                     <option value="kg">公斤</option>
                   </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">進貨總金額</label>
-                  <DecimalInput value={form.purchaseAmount} onValueChange={value => updateField("purchaseAmount", value)} className="rounded-none" />
+                  <DecimalInput value={form.purchaseAmount} onValueChange={value => updateField("purchaseAmount", value)} className={REPORT_INPUT_CLASS_NAME} />
                 </div>
                 <div className="border border-border bg-muted p-4 md:col-span-3">
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">換算後進貨噸數 / 進貨成本（元/噸）</p>
@@ -275,18 +276,18 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
               <CardContent className="grid gap-4 pt-6 md:grid-cols-3">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">出貨數量</label>
-                  <DecimalInput value={form.shipmentQuantity} onValueChange={value => updateField("shipmentQuantity", value)} className="rounded-none" />
+                  <DecimalInput value={form.shipmentQuantity} onValueChange={value => updateField("shipmentQuantity", value)} className={REPORT_INPUT_CLASS_NAME} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">單位</label>
-                  <select value={form.shipmentUnit} onChange={event => updateField("shipmentUnit", event.target.value as "ton" | "kg")} className="h-10 w-full rounded-none border border-input bg-background px-3 text-sm">
+                  <select value={form.shipmentUnit} onChange={event => updateField("shipmentUnit", event.target.value as "ton" | "kg")} className={REPORT_SELECT_CLASS_NAME}>
                     <option value="ton">噸</option>
                     <option value="kg">公斤</option>
                   </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">出貨總金額</label>
-                  <DecimalInput value={form.shipmentAmount} onValueChange={value => updateField("shipmentAmount", value)} className="rounded-none" />
+                  <DecimalInput value={form.shipmentAmount} onValueChange={value => updateField("shipmentAmount", value)} className={REPORT_INPUT_CLASS_NAME} />
                 </div>
               </CardContent>
             </Card>
@@ -298,11 +299,11 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
               <CardContent className="grid gap-4 pt-6 md:grid-cols-3">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">板車運</label>
-                  <DecimalInput value={form.flatbedFreight} onValueChange={value => updateField("flatbedFreight", value)} className="rounded-none" />
+                  <DecimalInput value={form.flatbedFreight} onValueChange={value => updateField("flatbedFreight", value)} className={REPORT_INPUT_CLASS_NAME} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">吊卡運</label>
-                  <DecimalInput value={form.craneFreight} onValueChange={value => updateField("craneFreight", value)} className="rounded-none" />
+                  <DecimalInput value={form.craneFreight} onValueChange={value => updateField("craneFreight", value)} className={REPORT_INPUT_CLASS_NAME} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">不含運</label>
@@ -335,7 +336,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                             workerNameSnapshot: worker?.name ?? current.workerNameSnapshot,
                           }));
                         }}
-                        className="h-10 w-full rounded-none border border-input bg-background px-3 text-sm"
+                        className={REPORT_SELECT_CLASS_NAME}
                       >
                         <option value="">未指定</option>
                         {workerOptions.map(worker => (
@@ -345,15 +346,15 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">加工名稱快照</label>
-                      <Input value={entry.workerNameSnapshot} onChange={event => updateProcessingEntry(index, current => ({ ...current, workerNameSnapshot: event.target.value }))} className="rounded-none" />
+                      <Input value={entry.workerNameSnapshot} onChange={event => updateProcessingEntry(index, current => ({ ...current, workerNameSnapshot: event.target.value }))} className={REPORT_INPUT_CLASS_NAME} />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">加工噸數</label>
-                      <DecimalInput value={entry.processingWeightTons} onValueChange={value => updateProcessingEntry(index, current => ({ ...current, processingWeightTons: value }))} className="rounded-none" />
+                      <DecimalInput value={entry.processingWeightTons} onValueChange={value => updateProcessingEntry(index, current => ({ ...current, processingWeightTons: value }))} className={REPORT_INPUT_CLASS_NAME} />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">費用</label>
-                      <DecimalInput value={entry.feeAmount} onValueChange={value => updateProcessingEntry(index, current => ({ ...current, feeAmount: value }))} className="rounded-none" />
+                      <DecimalInput value={entry.feeAmount} onValueChange={value => updateProcessingEntry(index, current => ({ ...current, feeAmount: value }))} className={REPORT_INPUT_CLASS_NAME} />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">均價</label>
@@ -387,7 +388,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                 <CardTitle className="text-xl font-black">備註</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
-                <Textarea value={form.note} onChange={event => updateField("note", event.target.value)} className="min-h-32 rounded-none" placeholder="例如：春節延後請款，導致本月利潤偏高。" />
+                <Textarea value={form.note} onChange={event => updateField("note", event.target.value)} className={`min-h-32 ${REPORT_INPUT_CLASS_NAME}`} placeholder="例如：春節延後請款，導致本月利潤偏高。" />
               </CardContent>
             </Card>
           </div>

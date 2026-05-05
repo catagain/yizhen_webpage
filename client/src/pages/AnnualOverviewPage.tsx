@@ -4,16 +4,15 @@ import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
-  Cell,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 
 function formatCurrency(value: number | null) {
   if (value === null) return "—";
@@ -33,19 +32,35 @@ export function formatChartYAxisTick(value: number) {
   return `${value / 10000}萬`;
 }
 
+export function formatPerTonTick(value: number) {
+  return new Intl.NumberFormat("zh-TW", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3,
+  }).format(value);
+}
+
 export const NET_PROFIT_Y_AXIS_TICKS = [1000000, 3000000, 5000000, 7000000, 9000000] as const;
+
+type AnnualChartMonth = {
+  monthKey: string;
+  netProfit: number;
+  grossProfitPerTon: number;
+};
+
+export function buildAnnualChartData(months: AnnualChartMonth[], year: number) {
+  return months.map(month => ({
+    monthKey: month.monthKey.replace(`${year}-`, ""),
+    netProfit: month.netProfit,
+    grossProfitPerTon: month.grossProfitPerTon,
+  }));
+}
 
 export default function AnnualOverviewPage() {
   const [year, setYear] = useState(() => new Date().getFullYear());
   const annualSummaryQuery = trpc.costing.annualSummary.useQuery({ year });
 
   const chartData = useMemo(
-    () =>
-      (annualSummaryQuery.data?.months ?? []).map(month => ({
-        monthKey: month.monthKey.replace(`${year}-`, ""),
-        netProfit: month.netProfit,
-        changeAmount: month.netProfitChangeAmount,
-      })),
+    () => buildAnnualChartData(annualSummaryQuery.data?.months ?? [], year),
     [annualSummaryQuery.data, year]
   );
 
@@ -53,10 +68,10 @@ export default function AnnualOverviewPage() {
     <div className="space-y-6">
       <Card className="rounded-none border-foreground bg-card shadow-panel">
         <CardHeader className="border-b border-border">
-          <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground">Annual Net Profit View</p>
+          <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground">Annual Profit Trends</p>
           <CardTitle className="text-4xl font-black tracking-tight">年度彙總</CardTitle>
           <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-            此頁以淨利潤為主要比較指標，呈現每月金額與相較上月的增減金額、增減百分比。若某月份受節慶延後請款影響，可回到月報頁查看備註。
+            此頁同時呈現淨利潤與毛利走勢。淨利潤圖以月度金額比較，毛利圖則沿用既有公式，顯示每噸毛利的時間變化。
           </p>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 pt-6 md:flex-row md:items-end md:justify-between">
@@ -116,44 +131,66 @@ export default function AnnualOverviewPage() {
         </Card>
       </section>
 
-      <Card className="rounded-none border-border bg-card">
-        <CardHeader className="border-b border-border">
-          <CardTitle className="text-xl font-black">淨利潤走勢</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="h-[360px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
-                <CartesianGrid strokeDasharray="2 2" stroke="var(--color-grid)" />
-                <XAxis dataKey="monthKey" stroke="var(--color-muted-foreground)" />
-                <YAxis
-                  stroke="var(--color-muted-foreground)"
-                  domain={[0, 10000000]}
-                  ticks={[...NET_PROFIT_Y_AXIS_TICKS]}
-                  tickFormatter={formatChartYAxisTick}
-                />
-                <Tooltip
-                  cursor={{ fill: "var(--color-muted)" }}
-                  contentStyle={{
-                    background: "var(--color-card)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: 0,
-                  }}
-                  formatter={(value: number) => formatCurrency(value)}
-                />
-                <Bar dataKey="netProfit" radius={0}>
-                  {chartData.map(entry => (
-                    <Cell
-                      key={entry.monthKey}
-                      fill={entry.netProfit >= 0 ? "var(--color-chart-1)" : "var(--color-chart-2)"}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      <section className="grid gap-6 xl:grid-cols-2">
+        <TrendChartCard title="淨利潤走勢" description="橫軸為月份，縱軸為淨利潤金額。">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
+              <CartesianGrid strokeDasharray="2 2" stroke="var(--color-grid)" />
+              <XAxis dataKey="monthKey" stroke="var(--color-muted-foreground)" />
+              <YAxis
+                stroke="var(--color-muted-foreground)"
+                domain={[0, 10000000]}
+                ticks={[...NET_PROFIT_Y_AXIS_TICKS]}
+                tickFormatter={formatChartYAxisTick}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "var(--color-card)",
+                  border: "1px solid var(--color-border)",
+                  borderRadius: 0,
+                }}
+                labelFormatter={label => `${year}-${label}`}
+                formatter={(value: number) => [formatCurrency(value), "淨利潤"]}
+              />
+              <Line
+                type="monotone"
+                dataKey="netProfit"
+                stroke="var(--color-chart-1)"
+                strokeWidth={3}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-chart-1)" }}
+                activeDot={{ r: 5 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </TrendChartCard>
+
+        <TrendChartCard title="毛利走勢" description="橫軸為月份，縱軸為每噸毛利，沿用既有毛利公式。">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
+              <CartesianGrid strokeDasharray="2 2" stroke="var(--color-grid)" />
+              <XAxis dataKey="monthKey" stroke="var(--color-muted-foreground)" />
+              <YAxis stroke="var(--color-muted-foreground)" tickFormatter={formatPerTonTick} />
+              <Tooltip
+                contentStyle={{
+                  background: "var(--color-card)",
+                  border: "1px solid var(--color-border)",
+                  borderRadius: 0,
+                }}
+                labelFormatter={label => `${year}-${label}`}
+                formatter={(value: number) => [`${formatPerTonTick(value)} 元/噸`, "毛利"]}
+              />
+              <Line
+                type="monotone"
+                dataKey="grossProfitPerTon"
+                stroke="var(--color-chart-2)"
+                strokeWidth={3}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-chart-2)" }}
+                activeDot={{ r: 5 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </TrendChartCard>
+      </section>
 
       <Card className="rounded-none border-border bg-card">
         <CardHeader className="border-b border-border">
@@ -162,7 +199,7 @@ export default function AnnualOverviewPage() {
         <CardContent className="pt-6">
           <div className="space-y-3">
             {(annualSummaryQuery.data?.months ?? []).map(month => (
-              <div key={month.monthKey} className="grid gap-3 border border-border p-4 md:grid-cols-4">
+              <div key={month.monthKey} className="grid gap-3 border border-border p-4 md:grid-cols-5">
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">月份</p>
                   <p className="mt-2 text-lg font-black">{month.monthKey}</p>
@@ -170,6 +207,10 @@ export default function AnnualOverviewPage() {
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">淨利潤</p>
                   <p className="mt-2 text-lg font-black">{formatCurrency(month.netProfit)}</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">毛利</p>
+                  <p className="mt-2 text-lg font-black">{formatPerTonTick(month.grossProfitPerTon)} 元/噸</p>
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">較上月增減金額</p>
@@ -190,5 +231,27 @@ export default function AnnualOverviewPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function TrendChartCard({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+}) {
+  return (
+    <Card className="rounded-none border-border bg-card">
+      <CardHeader className="border-b border-border">
+        <CardTitle className="text-xl font-black">{title}</CardTitle>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <div className="h-[360px] w-full">{children}</div>
+      </CardContent>
+    </Card>
   );
 }

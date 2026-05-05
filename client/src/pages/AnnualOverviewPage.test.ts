@@ -9,13 +9,13 @@ import {
 
 describe("AnnualOverviewPage chart helpers", () => {
   it("uses the fixed net profit Y-axis ticks requested by the user", () => {
-    expect(NET_PROFIT_Y_AXIS_TICKS).toEqual([1000000, 3000000, 5000000, 7000000, 9000000]);
+    expect(NET_PROFIT_Y_AXIS_TICKS).toEqual([1000000, 5000000, 10000000, 15000000, 20000000]);
   });
 
   it("formats net profit Y-axis tick labels in ten-thousand units", () => {
     expect(formatChartYAxisTick(1000000)).toBe("100萬");
-    expect(formatChartYAxisTick(3000000)).toBe("300萬");
-    expect(formatChartYAxisTick(9000000)).toBe("900萬");
+    expect(formatChartYAxisTick(5000000)).toBe("500萬");
+    expect(formatChartYAxisTick(20000000)).toBe("2000萬");
   });
 
   it("formats gross profit labels with the existing per-ton precision", () => {

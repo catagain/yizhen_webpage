@@ -39,7 +39,7 @@ export function formatPerTonTick(value: number) {
   }).format(value);
 }
 
-export const NET_PROFIT_Y_AXIS_TICKS = [1000000, 3000000, 5000000, 7000000, 9000000] as const;
+export const NET_PROFIT_Y_AXIS_TICKS = [1000000, 5000000, 10000000, 15000000, 20000000] as const;
 
 type AnnualChartMonth = {
   monthKey: string;
@@ -139,7 +139,7 @@ export default function AnnualOverviewPage() {
               <XAxis dataKey="monthKey" stroke="var(--color-muted-foreground)" />
               <YAxis
                 stroke="var(--color-muted-foreground)"
-                domain={[0, 10000000]}
+                domain={[0, 20000000]}
                 ticks={[...NET_PROFIT_Y_AXIS_TICKS]}
                 tickFormatter={formatChartYAxisTick}
               />

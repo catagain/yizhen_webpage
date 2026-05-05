@@ -20,9 +20,11 @@ describe("costing helpers", () => {
       shipmentQuantity: 12,
       shipmentUnit: "ton",
       shipmentAmount: 360000,
+      flatbedWeightTons: 10,
       flatbedFreight: 10000,
-      craneFreight: 5000,
-      selfHaulFreight: 0,
+      craneWeightTons: 2.5,
+      craneFeePerTon: 2000,
+      selfHaulWeightTons: 1.5,
       processingEntries: [
         {
           workerId: 1,
@@ -44,6 +46,7 @@ describe("costing helpers", () => {
     expect(result.purchaseWeightTons).toBe(10);
     expect(result.shipmentWeightTons).toBe(12);
     expect(result.purchaseCostPerTon).toBe(20000);
+    expect(result.craneFreight).toBe(5000);
     expect(result.totalFreight).toBe(15000);
     expect(result.processingSubtotal).toBe(48000);
     expect(result.totalProcessingFee).toBe(48000);

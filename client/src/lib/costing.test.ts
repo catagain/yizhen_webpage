@@ -14,13 +14,9 @@ describe("client costing helpers", () => {
     expect(rows.every(row => row.workerId === null)).toBe(true);
   });
 
-  it("creates a default monthly report with the new freight record fields", () => {
+  it("creates a default monthly report without in-house processing fields", () => {
     const report = createEmptyMonthlyReport("2026-04");
     expect(report.monthKey).toBe("2026-04");
-    expect(report.flatbedWeightTons).toBe(0);
-    expect(report.craneWeightTons).toBe(0);
-    expect(report.craneFeePerTon).toBe(0);
-    expect(report.selfHaulWeightTons).toBe(0);
     expect(report.processingEntries).toHaveLength(4);
     expect("inHouseUnitCost" in report).toBe(false);
   });
@@ -34,11 +30,8 @@ describe("client costing helpers", () => {
       shipmentQuantity: 10,
       shipmentUnit: "ton",
       shipmentAmount: 300000,
-      flatbedWeightTons: 8,
       flatbedFreight: 12000,
-      craneWeightTons: 2,
-      craneFeePerTon: 4000,
-      selfHaulWeightTons: 1,
+      craneFreight: 8000,
       note: "",
       processingEntries: [
         {
@@ -76,7 +69,6 @@ describe("client costing helpers", () => {
     expect(metrics.shipmentWeightTons).toBe(10);
     expect(metrics.processingSubtotal).toBe(32000);
     expect(metrics.totalProcessingFee).toBe(32000);
-    expect(metrics.craneFreight).toBe(8000);
     expect(metrics.totalFreight).toBe(20000);
     expect(metrics.salesCost).toBe(52000);
     expect(metrics.shipmentUnitPrice).toBe(24800);

@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { REPORT_INPUT_CLASS_NAME } from "@/lib/reportInputStyles";
 import { trpc } from "@/lib/trpc";
 import { ArrowRight, CalendarPlus, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -69,20 +68,20 @@ export default function ReportsPage() {
         <CardContent className="grid gap-4 pt-6 md:grid-cols-[1fr_1fr_1fr_auto]">
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">建立或開啟月份</label>
-            <Input type="month" value={monthInput} onChange={event => setMonthInput(event.target.value)} className={REPORT_INPUT_CLASS_NAME} />
+            <Input type="month" value={monthInput} onChange={event => setMonthInput(event.target.value)} className="rounded-none" />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">年度篩選</label>
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={yearFilter} onChange={event => setYearFilter(event.target.value)} className={`${REPORT_INPUT_CLASS_NAME} pl-10`} inputMode="numeric" />
+              <Input value={yearFilter} onChange={event => setYearFilter(event.target.value)} className="rounded-none pl-10" inputMode="numeric" />
             </div>
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">月份搜尋</label>
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={keyword} onChange={event => setKeyword(event.target.value)} className={`${REPORT_INPUT_CLASS_NAME} pl-10`} placeholder="例如 2026-04" />
+              <Input value={keyword} onChange={event => setKeyword(event.target.value)} className="rounded-none pl-10" placeholder="例如 2026-04" />
             </div>
           </div>
           <div className="flex items-end">

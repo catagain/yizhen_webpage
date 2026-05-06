@@ -193,11 +193,8 @@ export type SaveMonthlyReportInput = {
   shipmentQuantity: number;
   shipmentUnit: WeightUnit;
   shipmentAmount: number;
-  flatbedWeightTons: number;
   flatbedFreight: number;
-  craneWeightTons: number;
-  craneFeePerTon: number;
-  selfHaulWeightTons: number;
+  craneFreight: number;
   note?: string;
   processingEntries: ProcessingEntryInput[];
   actorUserId?: number | null;
@@ -216,11 +213,9 @@ export async function saveMonthlyReport(input: SaveMonthlyReportInput) {
     shipmentQuantity: input.shipmentQuantity,
     shipmentUnit: input.shipmentUnit,
     shipmentAmount: input.shipmentAmount,
-    flatbedWeightTons: input.flatbedWeightTons,
     flatbedFreight: input.flatbedFreight,
-    craneWeightTons: input.craneWeightTons,
-    craneFeePerTon: input.craneFeePerTon,
-    selfHaulWeightTons: input.selfHaulWeightTons,
+    craneFreight: input.craneFreight,
+    selfHaulFreight: 0,
     processingEntries: input.processingEntries,
   });
 
@@ -241,12 +236,8 @@ export async function saveMonthlyReport(input: SaveMonthlyReportInput) {
       shipmentUnit: input.shipmentUnit,
       shipmentWeightTons: toDbDecimal(metrics.shipmentWeightTons),
       shipmentAmount: toDbDecimal(input.shipmentAmount),
-      flatbedWeightTons: toDbDecimal(input.flatbedWeightTons),
       flatbedFreight: toDbDecimal(input.flatbedFreight),
-      craneWeightTons: toDbDecimal(input.craneWeightTons),
-      craneFeePerTon: toDbDecimal(input.craneFeePerTon),
-      craneFreight: toDbDecimal(metrics.craneFreight),
-      selfHaulWeightTons: toDbDecimal(input.selfHaulWeightTons),
+      craneFreight: toDbDecimal(input.craneFreight),
       selfHaulFreight: toDbDecimal(0),
       inHouseHeadcount: 0,
       inHouseUnitCost: toDbDecimal(0),
@@ -322,12 +313,8 @@ function mapMonthlyReportRow(row: MonthlyReport) {
     shipmentUnit: row.shipmentUnit,
     shipmentWeightTons: normalizeNumber(row.shipmentWeightTons),
     shipmentAmount: normalizeNumber(row.shipmentAmount),
-    flatbedWeightTons: normalizeNumber(row.flatbedWeightTons),
     flatbedFreight: normalizeNumber(row.flatbedFreight),
-    craneWeightTons: normalizeNumber(row.craneWeightTons),
-    craneFeePerTon: normalizeNumber(row.craneFeePerTon),
     craneFreight: normalizeNumber(row.craneFreight),
-    selfHaulWeightTons: normalizeNumber(row.selfHaulWeightTons),
     selfHaulFreight: normalizeNumber(row.selfHaulFreight),
     inHouseHeadcount: row.inHouseHeadcount,
     inHouseUnitCost: normalizeNumber(row.inHouseUnitCost),
@@ -349,11 +336,9 @@ function composeReportPayload(report: MonthlyReport, entries: typeof processingE
     shipmentQuantity: base.shipmentQuantity,
     shipmentUnit: base.shipmentUnit,
     shipmentAmount: base.shipmentAmount,
-    flatbedWeightTons: base.flatbedWeightTons,
     flatbedFreight: base.flatbedFreight,
-    craneWeightTons: base.craneWeightTons,
-    craneFeePerTon: base.craneFeePerTon,
-    selfHaulWeightTons: base.selfHaulWeightTons,
+    craneFreight: base.craneFreight,
+    selfHaulFreight: base.selfHaulFreight,
     processingEntries: mappedEntries,
   } satisfies MonthlyReportCalculationInput);
 

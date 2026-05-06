@@ -17,11 +17,9 @@ export type MonthlyReportCalculationInput = {
   shipmentQuantity: number;
   shipmentUnit: WeightUnit;
   shipmentAmount: number;
-  flatbedWeightTons?: number;
   flatbedFreight: number;
-  craneWeightTons: number;
-  craneFeePerTon: number;
-  selfHaulWeightTons?: number;
+  craneFreight: number;
+  selfHaulFreight?: number;
   processingEntries: ProcessingEntryInput[];
 };
 
@@ -33,7 +31,6 @@ export type MonthlyReportMetrics = {
   purchaseWeightTons: number;
   shipmentWeightTons: number;
   purchaseCostPerTon: number;
-  craneFreight: number;
   totalFreight: number;
   processingSubtotal: number;
   totalProcessingFee: number;
@@ -80,9 +77,8 @@ export function computeMonthlyReportMetrics(
   const purchaseAmount = normalizeNumber(input.purchaseAmount);
   const shipmentAmount = normalizeNumber(input.shipmentAmount);
   const flatbedFreight = normalizeNumber(input.flatbedFreight);
-  const craneWeightTons = normalizeNumber(input.craneWeightTons);
-  const craneFeePerTon = normalizeNumber(input.craneFeePerTon);
-  const craneFreight = roundToThree(craneWeightTons * craneFeePerTon);
+  const craneFreight = normalizeNumber(input.craneFreight);
+  const selfHaulFreight = normalizeNumber(input.selfHaulFreight ?? 0);
 
   const processingEntries = input.processingEntries.map(entry => {
     const processingWeightTons = roundToThree(normalizeNumber(entry.processingWeightTons));
@@ -104,7 +100,7 @@ export function computeMonthlyReportMetrics(
     processingEntries.reduce((sum, entry) => sum + entry.feeAmount, 0)
   );
   const totalProcessingFee = roundToThree(processingSubtotal);
-  const totalFreight = roundToThree(flatbedFreight + craneFreight);
+  const totalFreight = roundToThree(flatbedFreight + craneFreight + selfHaulFreight);
   const salesCost = roundToThree(totalFreight + totalProcessingFee);
   const purchaseCostPerTon =
     purchaseWeightTons > 0 ? roundToThree(purchaseAmount / purchaseWeightTons) : 0;
@@ -119,7 +115,6 @@ export function computeMonthlyReportMetrics(
     purchaseWeightTons,
     shipmentWeightTons,
     purchaseCostPerTon,
-    craneFreight,
     totalFreight,
     processingSubtotal,
     totalProcessingFee,

@@ -16,11 +16,8 @@ export type MonthlyReportFormValues = {
   shipmentQuantity: number;
   shipmentUnit: WeightUnit;
   shipmentAmount: number;
-  flatbedWeightTons: number;
   flatbedFreight: number;
-  craneWeightTons: number;
-  craneFeePerTon: number;
-  selfHaulWeightTons: number;
+  craneFreight: number;
   note: string;
   processingEntries: WorkerFormRow[];
 };
@@ -52,8 +49,7 @@ export function computeMonthlyMetrics(values: MonthlyReportFormValues) {
     processingEntries.reduce((sum, entry) => sum + entry.feeAmount, 0)
   );
   const totalProcessingFee = roundToThree(processingSubtotal);
-  const craneFreight = roundToThree(values.craneWeightTons * values.craneFeePerTon);
-  const totalFreight = roundToThree(values.flatbedFreight + craneFreight);
+  const totalFreight = roundToThree(values.flatbedFreight + values.craneFreight);
   const salesCost = roundToThree(totalFreight + totalProcessingFee);
   const purchaseCostPerTon =
     purchaseWeightTons > 0 ? roundToThree(values.purchaseAmount / purchaseWeightTons) : 0;
@@ -70,7 +66,6 @@ export function computeMonthlyMetrics(values: MonthlyReportFormValues) {
     purchaseCostPerTon,
     processingSubtotal,
     totalProcessingFee,
-    craneFreight,
     totalFreight,
     salesCost,
     shipmentUnitPrice,
@@ -99,11 +94,8 @@ export function createEmptyMonthlyReport(monthKey: string): MonthlyReportFormVal
     shipmentQuantity: 0,
     shipmentUnit: "ton",
     shipmentAmount: 0,
-    flatbedWeightTons: 0,
     flatbedFreight: 0,
-    craneWeightTons: 0,
-    craneFeePerTon: 0,
-    selfHaulWeightTons: 0,
+    craneFreight: 0,
     note: "",
     processingEntries: createEmptyProcessingEntries(),
   };

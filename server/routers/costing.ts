@@ -28,8 +28,11 @@ const saveMonthlyReportSchema = z.object({
   shipmentQuantity: z.number().min(0),
   shipmentUnit: z.enum(["ton", "kg"]),
   shipmentAmount: z.number().min(0),
+  flatbedWeightTons: z.number().min(0),
   flatbedFreight: z.number().min(0),
-  craneFreight: z.number().min(0),
+  craneWeightTons: z.number().min(0),
+  craneFeePerTon: z.number().min(0),
+  selfHaulWeightTons: z.number().min(0),
   note: z.string().max(5000).optional().default(""),
   processingEntries: z.array(processingEntrySchema).max(4),
 });

@@ -56,8 +56,11 @@ describe("costing router", () => {
       shipmentQuantity: 7.5,
       shipmentUnit: "ton",
       shipmentAmount: 280000.5,
+      flatbedWeightTons: 7.5,
       flatbedFreight: 12000.25,
-      craneFreight: 8000.5,
+      craneWeightTons: 2.75,
+      craneFeePerTon: 2909.273,
+      selfHaulWeightTons: 0.5,
       note: "decimal save",
       processingEntries: [
         {
@@ -84,8 +87,11 @@ describe("costing router", () => {
         purchaseAmount: 160000.75,
         shipmentQuantity: 7.5,
         shipmentAmount: 280000.5,
+        flatbedWeightTons: 7.5,
         flatbedFreight: 12000.25,
-        craneFreight: 8000.5,
+        craneWeightTons: 2.75,
+        craneFeePerTon: 2909.273,
+        selfHaulWeightTons: 0.5,
       })
     );
   });

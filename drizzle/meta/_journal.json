@@ -29,6 +29,20 @@
       "when": 1777964050626,
       "tag": "0003_wealthy_bloodstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1778049882969,
+      "tag": "0004_rainy_tyrannus",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1778051066624,
+      "tag": "0005_far_infant_terrible",
+      "breakpoints": true
     }
   ]
 }

@@ -10,10 +10,16 @@ import {
   sanitizeDecimalInput,
   type MonthlyReportFormValues,
 } from "@/lib/costing";
+import {
+  getMonthlyReportPrintFormulas,
+  getMonthlyReportPrintFreightFields,
+  getMonthlyReportPrintSignatures,
+  getMonthlyReportPrintSummaryCards,
+} from "@/lib/monthlyReportPrint";
 import { REPORT_INPUT_CLASS_NAME, REPORT_SELECT_CLASS_NAME } from "@/lib/reportInputStyles";
 import { trpc } from "@/lib/trpc";
 import { ArrowLeft, Printer, Save, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 
@@ -159,6 +165,14 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
 
   const metrics = useMemo(() => computeMonthlyMetrics(form), [form]);
   const workerOptions = workersQuery.data ?? [];
+  const printSummaryCards = useMemo(() => getMonthlyReportPrintSummaryCards(metrics), [metrics]);
+  const printFreightFields = useMemo(() => getMonthlyReportPrintFreightFields(form, metrics), [form, metrics]);
+  const printFormulas = useMemo(() => getMonthlyReportPrintFormulas(form, metrics), [form, metrics]);
+  const printSignatures = useMemo(() => getMonthlyReportPrintSignatures(), []);
+  const filledProcessingEntries = useMemo(
+    () => form.processingEntries.filter(entry => entry.workerId !== null || entry.processingWeightTons !== 0 || entry.feeAmount !== 0 || entry.workerNameSnapshot),
+    [form.processingEntries]
+  );
 
   const updateField = <K extends keyof MonthlyReportFormValues>(key: K, value: MonthlyReportFormValues[K]) => {
     setForm(current => ({
@@ -424,29 +438,115 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
       </div>
 
       <section className="print-only hidden print:block">
-        <div className="border border-border bg-white p-8 text-black">
-          <div className="border-b border-black pb-6">
-            <p className="text-[11px] uppercase tracking-[0.5em] text-neutral-500">Printable Monthly Summary</p>
-            <h2 className="mt-4 text-4xl font-black tracking-tight">{formatMonthLabel(monthKey)} 成本與利潤月報</h2>
-          </div>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <MetricPrint label="進貨噸數" value={`${formatNumber(metrics.purchaseWeightTons)} 噸`} />
-            <MetricPrint label="出貨噸數" value={`${formatNumber(metrics.shipmentWeightTons)} 噸`} />
-            <MetricPrint label="板運噸數" value={`${formatNumber(form.flatbedWeightTons)} 噸`} />
-            <MetricPrint label="吊運噸數" value={`${formatNumber(form.craneWeightTons)} 噸`} />
-            <MetricPrint label="不運噸數" value={`${formatNumber(form.selfHaulWeightTons)} 噸`} />
-            <MetricPrint label="吊卡運" value={formatCurrency(metrics.craneFreight)} />
-            <MetricPrint label="總運費" value={formatCurrency(metrics.totalFreight)} />
-            <MetricPrint label="總加工費" value={formatCurrency(metrics.totalProcessingFee)} />
-            <MetricPrint label="銷貨成本" value={formatCurrency(metrics.salesCost)} />
-            <MetricPrint label="本月利潤" value={formatCurrency(metrics.netProfit)} />
-          </div>
-          <div className="mt-8 border-t border-black pt-6 text-sm leading-7">
-            <p>出貨每噸均價：{formatNumber(metrics.shipmentUnitPrice)} 元/噸（計算式為：出貨總金額 - 總加工費 - 總運費，再除以出貨數量）</p>
-            <p>毛利：{formatNumber(metrics.grossProfitPerTon)} 元/噸（計算式為：出貨每噸均價 - 進貨每噸均價）</p>
-            <p>吊卡運：{formatNumber(form.craneWeightTons)} 噸 × {formatCurrency(form.craneFeePerTon)} ／ 噸 = {formatCurrency(metrics.craneFreight)}</p>
-            <p>備註：{form.note || "—"}</p>
-          </div>
+        <div className="mx-auto flex w-full max-w-[980px] flex-col items-center gap-8 text-black">
+          <article className="w-full break-after-page border border-black bg-white px-10 py-8">
+            <div className="mx-auto flex max-w-[900px] flex-col gap-8">
+              <header className="border-b border-black pb-6 text-center">
+                <p className="text-[11px] uppercase tracking-[0.5em] text-neutral-500">Yizhen Costing System</p>
+                <h2 className="mt-4 text-4xl font-black tracking-tight">{formatMonthLabel(monthKey)} 月報列印版</h2>
+                <p className="mt-3 text-sm text-neutral-600">完整呈現進貨、出貨、運費與利潤結果，供列印與簽核使用。</p>
+              </header>
+
+              <div className="grid grid-cols-4 gap-3">
+                {printSummaryCards.map(card => (
+                  <div key={card.label} className={`border px-4 py-4 ${card.tone === "dark" ? "border-black bg-black text-white" : "border-black bg-neutral-50 text-black"}`}>
+                    <p className={`text-[10px] uppercase tracking-[0.24em] ${card.tone === "dark" ? "text-white/70" : "text-neutral-500"}`}>{card.label}</p>
+                    <p className="mt-3 text-xl font-black tracking-tight">{card.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <PrintSectionCard title="主檔參數">
+                  <PrintDataGrid
+                    rows={[
+                      { label: "進貨數量", value: form.purchaseQuantity.toLocaleString("zh-TW") },
+                      { label: "進貨單位", value: form.purchaseUnit },
+                      { label: "進貨噸數", value: `${formatNumber(metrics.purchaseWeightTons)} 噸` },
+                      { label: "進貨總金額", value: formatCurrency(form.purchaseAmount) },
+                      { label: "進貨每噸均價", value: `${formatNumber(metrics.purchaseCostPerTon)} 元/噸` },
+                      { label: "出貨數量", value: form.shipmentQuantity.toLocaleString("zh-TW") },
+                      { label: "出貨單位", value: form.shipmentUnit },
+                      { label: "出貨噸數", value: `${formatNumber(metrics.shipmentWeightTons)} 噸` },
+                      { label: "出貨總金額", value: formatCurrency(form.shipmentAmount) },
+                      { label: "出貨每噸均價", value: `${formatNumber(metrics.shipmentUnitPrice)} 元/噸` },
+                    ]}
+                  />
+                </PrintSectionCard>
+
+                <PrintSectionCard title="運費與結果">
+                  <PrintDataGrid rows={printFreightFields} />
+                  <div className="mt-4 grid grid-cols-2 gap-3">
+                    <PrintHighlightBox label="總加工費" value={formatCurrency(metrics.totalProcessingFee)} />
+                    <PrintHighlightBox label="本月利潤" value={formatCurrency(metrics.netProfit)} inverted />
+                  </div>
+                </PrintSectionCard>
+              </div>
+            </div>
+          </article>
+
+          <article className="w-full border border-black bg-white px-10 py-8">
+            <div className="mx-auto flex max-w-[900px] flex-col gap-8">
+              <header className="border-b border-black pb-5 text-center">
+                <h3 className="text-2xl font-black tracking-tight">加工、公式與簽核</h3>
+                <p className="mt-2 text-sm text-neutral-600">第 2 頁集中列出加工明細、核心公式、備註與簽核欄。</p>
+              </header>
+
+              <PrintSectionCard title="加工明細">
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-neutral-100 text-left">
+                      <th className="border border-black px-3 py-2 font-bold">姓名</th>
+                      <th className="border border-black px-3 py-2 font-bold">加工噸數</th>
+                      <th className="border border-black px-3 py-2 font-bold">費用</th>
+                      <th className="border border-black px-3 py-2 font-bold">均價</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(filledProcessingEntries.length > 0 ? filledProcessingEntries : form.processingEntries.slice(0, 4)).map((entry, index) => {
+                      const unitPrice = entry.processingWeightTons === 0 ? 0 : entry.feeAmount / entry.processingWeightTons;
+                      return (
+                        <tr key={`${entry.workerId ?? "row"}-${index}`}>
+                          <td className="border border-black px-3 py-2">{entry.workerNameSnapshot || "—"}</td>
+                          <td className="border border-black px-3 py-2">{formatNumber(entry.processingWeightTons)} 噸</td>
+                          <td className="border border-black px-3 py-2">{formatCurrency(entry.feeAmount)}</td>
+                          <td className="border border-black px-3 py-2">{formatNumber(unitPrice)} 元/噸</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </PrintSectionCard>
+
+              <div className="grid grid-cols-2 gap-6">
+                <PrintSectionCard title="公式區">
+                  <div className="space-y-3">
+                    {printFormulas.map(formula => (
+                      <div key={formula.label} className="border border-black px-4 py-3">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">{formula.label}</p>
+                        <p className="mt-2 text-sm leading-6">{formula.expression}</p>
+                        <p className="mt-2 text-base font-black">= {formula.result}</p>
+                      </div>
+                    ))}
+                  </div>
+                </PrintSectionCard>
+
+                <PrintSectionCard title="備註與簽核">
+                  <div className="border border-black px-4 py-4 text-sm leading-7">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">備註</p>
+                    <p className="mt-2 min-h-28 whitespace-pre-wrap">{form.note || "—"}</p>
+                  </div>
+                  <div className="mt-4 grid grid-cols-3 gap-3">
+                    {printSignatures.map(signature => (
+                      <div key={signature} className="border border-black px-4 pb-3 pt-12 text-center">
+                        <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">{signature}</p>
+                      </div>
+                    ))}
+                  </div>
+                </PrintSectionCard>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
     </div>
@@ -463,11 +563,35 @@ function MetricBox({ label, value, description }: { label: string; value: string
   );
 }
 
-function MetricPrint({ label, value }: { label: string; value: string }) {
+function PrintSectionCard({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="border border-black px-4 py-4">
-      <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">{label}</p>
-      <p className="mt-3 text-xl font-black tracking-tight">{value}</p>
+    <section className="border border-black px-5 py-4">
+      <div className="border-b border-black pb-3">
+        <p className="text-xs font-bold uppercase tracking-[0.24em] text-neutral-500">{title}</p>
+      </div>
+      <div className="pt-4">{children}</div>
+    </section>
+  );
+}
+
+function PrintDataGrid({ rows }: { rows: Array<{ label: string; value: string }> }) {
+  return (
+    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+      {rows.map(row => (
+        <div key={row.label} className="border-b border-dashed border-neutral-400 pb-2">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-neutral-500">{row.label}</p>
+          <p className="mt-2 text-sm font-bold">{row.value}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PrintHighlightBox({ label, value, inverted = false }: { label: string; value: string; inverted?: boolean }) {
+  return (
+    <div className={`border px-4 py-4 ${inverted ? "border-black bg-black text-white" : "border-black bg-neutral-50 text-black"}`}>
+      <p className={`text-[11px] uppercase tracking-[0.18em] ${inverted ? "text-white/70" : "text-neutral-500"}`}>{label}</p>
+      <p className="mt-2 text-lg font-black tracking-tight">{value}</p>
     </div>
   );
 }

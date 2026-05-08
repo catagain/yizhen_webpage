@@ -58,22 +58,22 @@ describe("MonthlyReportPage print helpers", () => {
 
     expect(labels).toEqual([
       "板運噸數",
-      "板車運",
+      "板車運費",
       "吊運噸數",
       "每噸費用",
-      "吊卡運",
+      "吊卡運費",
       "不運噸數",
-      "不含運",
+      "不運費用",
       "總運費",
     ]);
-    expect(fields.find(field => field.label === "吊卡運")?.value).toContain("312,000");
+    expect(fields.find(field => field.label === "吊卡運費")?.value).toContain("312,000");
   });
 
   it("builds three formulas including crane freight and gross profit", () => {
     const formulas = getMonthlyReportPrintFormulas(form, metrics);
 
     expect(formulas).toHaveLength(3);
-    expect(formulas[0]).toMatchObject({ label: "吊卡運公式" });
+    expect(formulas[0]).toMatchObject({ label: "吊卡運費公式" });
     expect(formulas[1].result).toContain("14,028.000 元/噸");
     expect(formulas[2].result).toContain("6,028.000 元/噸");
   });

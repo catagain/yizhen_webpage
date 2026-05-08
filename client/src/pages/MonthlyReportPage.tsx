@@ -234,7 +234,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
               <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground">Monthly Report Editor</p>
               <CardTitle className="text-4xl font-black tracking-tight">{formatMonthLabel(monthKey)}</CardTitle>
               <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-                進貨、出貨、運費、加工與結果五大區塊會即時計算。運費區已拆開板運噸數、吊運噸數與不運噸數等紀錄欄位，其中吊卡運會依吊運噸數與每噸費用自動換算。
+                進貨、出貨、運費、加工與結果五大區塊會即時計算。運費區已拆開板運噸數、吊運噸數與不運噸數等紀錄欄位，其中吊卡運費會依吊運噸數與每噸費用自動換算。
               </p>
             </div>
             <div className="flex flex-wrap gap-2 print:hidden">
@@ -323,7 +323,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                     <DecimalInput value={form.flatbedWeightTons} onValueChange={value => updateField("flatbedWeightTons", value)} className={REPORT_INPUT_CLASS_NAME} />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">板車運</label>
+                    <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">板車運費</label>
                     <DecimalInput value={form.flatbedFreight} onValueChange={value => updateField("flatbedFreight", value)} className={REPORT_INPUT_CLASS_NAME} />
                   </div>
                 </div>
@@ -337,7 +337,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                     <DecimalInput value={form.craneFeePerTon} onValueChange={value => updateField("craneFeePerTon", value)} className={REPORT_INPUT_CLASS_NAME} />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">吊卡運</label>
+                    <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">吊卡運費</label>
                     <DecimalInput value={metrics.craneFreight} readOnly className="rounded-none bg-muted" />
                   </div>
                 </div>
@@ -347,7 +347,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                     <DecimalInput value={form.selfHaulWeightTons} onValueChange={value => updateField("selfHaulWeightTons", value)} className={REPORT_INPUT_CLASS_NAME} />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">不含運</label>
+                    <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">不運費用</label>
                     <Input value="0" readOnly className="rounded-none bg-muted" />
                   </div>
                 </div>
@@ -439,111 +439,205 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
 
       <section className="print-only hidden print:block">
         <div className="mx-auto flex w-full max-w-[980px] flex-col items-center gap-8 text-black">
-          <article className="w-full break-after-page border border-black bg-white px-10 py-8">
-            <div className="mx-auto flex max-w-[900px] flex-col gap-8">
-              <header className="border-b border-black pb-6 text-center">
-                <p className="text-[11px] uppercase tracking-[0.5em] text-neutral-500">Yizhen Costing System</p>
-                <h2 className="mt-4 text-4xl font-black tracking-tight">{formatMonthLabel(monthKey)} 月報列印版</h2>
-                <p className="mt-3 text-sm text-neutral-600">完整呈現進貨、出貨、運費與利潤結果，供列印與簽核使用。</p>
+          <article className="w-full break-after-page bg-white px-8 py-8">
+            <div className="mx-auto flex max-w-[920px] flex-col gap-6">
+              <header className="flex items-start justify-between gap-8 border-b-[3px] border-black pb-5">
+                <div className="max-w-[560px]">
+                  <p className="text-[11px] uppercase tracking-[0.5em] text-neutral-500">Yizhen Costing System</p>
+                  <h2 className="mt-4 text-[52px] font-black leading-[0.94] tracking-tight">{monthKey.slice(0, 4)}年 {monthKey.slice(5, 7)} 月月報列印版</h2>
+                </div>
+                <div className="w-[260px] border border-black bg-black px-5 py-4 text-white">
+                  <div className="grid grid-cols-[1fr_auto] gap-y-3 text-sm">
+                    <span className="text-white/75">報表月份</span>
+                    <span className="font-bold">{monthKey}</span>
+                    <span className="text-white/75">資料來源</span>
+                    <span className="font-bold">真實月報</span>
+                    <span className="text-white/75">版面用途</span>
+                    <span className="font-bold">正式列印版</span>
+                    <span className="text-white/75">頁次</span>
+                    <span className="font-bold">第 1 頁 / 共 2 頁</span>
+                  </div>
+                </div>
               </header>
+
+              <div className="grid grid-cols-[1.55fr_1fr] gap-4">
+                <div className="border border-black px-5 py-5 text-base leading-8">
+                  本頁集中呈現進貨、出貨、運費原始輸入與核心結果，方便紙本列印、核對與簽核時快速比對主要母數。
+                </div>
+                <div className="border border-black bg-black px-5 py-4 text-white">
+                  <p className="text-[11px] uppercase tracking-[0.3em] text-white/75">本月利潤 Net Profit</p>
+                  <p className="mt-6 text-[44px] font-black tracking-tight">{formatCurrency(metrics.netProfit).replace("NT$", "")}</p>
+                </div>
+              </div>
+
+              <PrintTableHeading english="PURCHASE" chinese="進貨參數" note="所有原始輸入與換算單位同頁顯示" />
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-[#f8f5ec] text-center">
+                    <th className="border border-black px-4 py-3 font-bold">區塊</th>
+                    <th className="border border-black px-4 py-3 font-bold">進貨數量</th>
+                    <th className="border border-black px-4 py-3 font-bold">單位</th>
+                    <th className="border border-black px-4 py-3 font-bold">換算後進貨噸數</th>
+                    <th className="border border-black px-4 py-3 font-bold">進貨總金額</th>
+                    <th className="border border-black px-4 py-3 font-bold">進貨成本（元/噸）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="text-right">
+                    <td className="border border-black px-4 py-3 text-center font-bold">進貨</td>
+                    <td className="border border-black px-4 py-3">{form.purchaseQuantity.toLocaleString("zh-TW")}</td>
+                    <td className="border border-black px-4 py-3 text-center">{form.purchaseUnit === "kg" ? "kg" : "ton"}</td>
+                    <td className="border border-black px-4 py-3">{formatNumber(metrics.purchaseWeightTons)}</td>
+                    <td className="border border-black px-4 py-3">{Math.round(form.purchaseAmount).toLocaleString("zh-TW")}</td>
+                    <td className="border border-black px-4 py-3">{formatNumber(metrics.purchaseCostPerTon)}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <PrintTableHeading english="SHIPMENT" chinese="出貨參數" note="保留數量、單位、噸數與總金額" />
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-[#f8f5ec] text-center">
+                    <th className="border border-black px-4 py-3 font-bold">區塊</th>
+                    <th className="border border-black px-4 py-3 font-bold">出貨數量</th>
+                    <th className="border border-black px-4 py-3 font-bold">單位</th>
+                    <th className="border border-black px-4 py-3 font-bold">換算後出貨噸數</th>
+                    <th className="border border-black px-4 py-3 font-bold">出貨總金額</th>
+                    <th className="border border-black px-4 py-3 font-bold">出貨每噸均價</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="text-right">
+                    <td className="border border-black px-4 py-3 text-center font-bold">出貨</td>
+                    <td className="border border-black px-4 py-3">{form.shipmentQuantity.toLocaleString("zh-TW")}</td>
+                    <td className="border border-black px-4 py-3 text-center">{form.shipmentUnit === "kg" ? "kg" : "ton"}</td>
+                    <td className="border border-black px-4 py-3">{formatNumber(metrics.shipmentWeightTons)}</td>
+                    <td className="border border-black px-4 py-3">{Math.round(form.shipmentAmount).toLocaleString("zh-TW")}</td>
+                    <td className="border border-black px-4 py-3">{formatNumber(metrics.shipmentUnitPrice)}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <PrintTableHeading english="FREIGHT" chinese="運費參數" note="紀錄欄位與計算欄位分開排版" />
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-[#f8f5ec] text-center">
+                    <th className="border border-black px-4 py-3 font-bold">板運噸數</th>
+                    <th className="border border-black px-4 py-3 font-bold">板車運費</th>
+                    <th className="border border-black px-4 py-3 font-bold">吊運噸數</th>
+                    <th className="border border-black px-4 py-3 font-bold">每噸費用</th>
+                    <th className="border border-black px-4 py-3 font-bold">吊卡運費</th>
+                    <th className="border border-black px-4 py-3 font-bold">不運噸數</th>
+                    <th className="border border-black px-4 py-3 font-bold">不運費用</th>
+                    <th className="border border-black px-4 py-3 font-bold">總運費</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="text-right">
+                    <td className="border border-black px-4 py-3">{formatNumber(form.flatbedWeightTons)}</td>
+                    <td className="border border-black px-4 py-3">{Math.round(form.flatbedFreight).toLocaleString("zh-TW")}</td>
+                    <td className="border border-black px-4 py-3">{formatNumber(form.craneWeightTons)}</td>
+                    <td className="border border-black px-4 py-3">{Math.round(form.craneFeePerTon).toLocaleString("zh-TW")}</td>
+                    <td className="border border-black px-4 py-3">{Math.round(metrics.craneFreight).toLocaleString("zh-TW")}</td>
+                    <td className="border border-black px-4 py-3">{formatNumber(form.selfHaulWeightTons)}</td>
+                    <td className="border border-black px-4 py-3">0</td>
+                    <td className="border border-black px-4 py-3">{Math.round(metrics.totalFreight).toLocaleString("zh-TW")}</td>
+                  </tr>
+                </tbody>
+              </table>
 
               <div className="grid grid-cols-4 gap-3">
                 {printSummaryCards.map(card => (
-                  <div key={card.label} className={`border px-4 py-4 ${card.tone === "dark" ? "border-black bg-black text-white" : "border-black bg-neutral-50 text-black"}`}>
-                    <p className={`text-[10px] uppercase tracking-[0.24em] ${card.tone === "dark" ? "text-white/70" : "text-neutral-500"}`}>{card.label}</p>
-                    <p className="mt-3 text-xl font-black tracking-tight">{card.value}</p>
-                  </div>
+                  <PrintFooterMetric key={card.label} label={card.label} value={card.value.replace("NT$", "")} inverted={card.tone === "dark"} />
                 ))}
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <PrintSectionCard title="主檔參數">
-                  <PrintDataGrid
-                    rows={[
-                      { label: "進貨數量", value: form.purchaseQuantity.toLocaleString("zh-TW") },
-                      { label: "進貨單位", value: form.purchaseUnit },
-                      { label: "進貨噸數", value: `${formatNumber(metrics.purchaseWeightTons)} 噸` },
-                      { label: "進貨總金額", value: formatCurrency(form.purchaseAmount) },
-                      { label: "進貨每噸均價", value: `${formatNumber(metrics.purchaseCostPerTon)} 元/噸` },
-                      { label: "出貨數量", value: form.shipmentQuantity.toLocaleString("zh-TW") },
-                      { label: "出貨單位", value: form.shipmentUnit },
-                      { label: "出貨噸數", value: `${formatNumber(metrics.shipmentWeightTons)} 噸` },
-                      { label: "出貨總金額", value: formatCurrency(form.shipmentAmount) },
-                      { label: "出貨每噸均價", value: `${formatNumber(metrics.shipmentUnitPrice)} 元/噸` },
-                    ]}
-                  />
-                </PrintSectionCard>
-
-                <PrintSectionCard title="運費與結果">
-                  <PrintDataGrid rows={printFreightFields} />
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <PrintHighlightBox label="總加工費" value={formatCurrency(metrics.totalProcessingFee)} />
-                    <PrintHighlightBox label="本月利潤" value={formatCurrency(metrics.netProfit)} inverted />
-                  </div>
-                </PrintSectionCard>
+              <div className="flex items-center justify-between text-sm text-neutral-600">
+                <p>月報主檔參數與結果摘要</p>
+                <p>01 / 02</p>
               </div>
             </div>
           </article>
 
-          <article className="w-full border border-black bg-white px-10 py-8">
-            <div className="mx-auto flex max-w-[900px] flex-col gap-8">
-              <header className="border-b border-black pb-5 text-center">
-                <h3 className="text-2xl font-black tracking-tight">加工、公式與簽核</h3>
-                <p className="mt-2 text-sm text-neutral-600">第 2 頁集中列出加工明細、核心公式、備註與簽核欄。</p>
+          <article className="w-full bg-white px-8 py-8">
+            <div className="mx-auto flex max-w-[920px] flex-col gap-6">
+              <header className="flex items-end justify-between gap-8 border-b-[3px] border-black pb-5">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.5em] text-neutral-500">Print Detail Page</p>
+                  <h3 className="mt-4 text-[44px] font-black tracking-tight">加工明細、公式說明與備註</h3>
+                </div>
+                <p className="text-2xl font-medium text-neutral-500">第 2 頁 / 共 2 頁</p>
               </header>
 
-              <PrintSectionCard title="加工明細">
-                <table className="w-full border-collapse text-sm">
-                  <thead>
-                    <tr className="bg-neutral-100 text-left">
-                      <th className="border border-black px-3 py-2 font-bold">姓名</th>
-                      <th className="border border-black px-3 py-2 font-bold">加工噸數</th>
-                      <th className="border border-black px-3 py-2 font-bold">費用</th>
-                      <th className="border border-black px-3 py-2 font-bold">均價</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(filledProcessingEntries.length > 0 ? filledProcessingEntries : form.processingEntries.slice(0, 4)).map((entry, index) => {
-                      const unitPrice = entry.processingWeightTons === 0 ? 0 : entry.feeAmount / entry.processingWeightTons;
-                      return (
-                        <tr key={`${entry.workerId ?? "row"}-${index}`}>
-                          <td className="border border-black px-3 py-2">{entry.workerNameSnapshot || "—"}</td>
-                          <td className="border border-black px-3 py-2">{formatNumber(entry.processingWeightTons)} 噸</td>
-                          <td className="border border-black px-3 py-2">{formatCurrency(entry.feeAmount)}</td>
-                          <td className="border border-black px-3 py-2">{formatNumber(unitPrice)} 元/噸</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </PrintSectionCard>
+              <PrintTableHeading english="PROCESSING DETAILS" chinese="加工明細" note="固定四列，避免每月高度跳動" />
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-[#f8f5ec] text-center">
+                    <th className="border border-black px-4 py-3 font-bold">序號</th>
+                    <th className="border border-black px-4 py-3 font-bold">加工名稱</th>
+                    <th className="border border-black px-4 py-3 font-bold">加工噸數</th>
+                    <th className="border border-black px-4 py-3 font-bold">費用</th>
+                    <th className="border border-black px-4 py-3 font-bold">均價（元/噸）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(filledProcessingEntries.length > 0 ? filledProcessingEntries : form.processingEntries.slice(0, 4)).slice(0, 4).map((entry, index) => {
+                    const unitPrice = entry.processingWeightTons === 0 ? 0 : entry.feeAmount / entry.processingWeightTons;
+                    return (
+                      <tr key={`${entry.workerId ?? "row"}-${index}`} className="text-right">
+                        <td className="border border-black px-4 py-3 text-center">{index + 1}</td>
+                        <td className="border border-black px-4 py-3 text-left">{entry.workerNameSnapshot || "—"}</td>
+                        <td className="border border-black px-4 py-3">{formatNumber(entry.processingWeightTons)}</td>
+                        <td className="border border-black px-4 py-3">{Math.round(entry.feeAmount).toLocaleString("zh-TW")}</td>
+                        <td className="border border-black px-4 py-3">{formatNumber(unitPrice)}</td>
+                      </tr>
+                    );
+                  })}
+                  <tr className="font-bold text-right">
+                    <td className="border border-black px-4 py-3 text-center" colSpan={3}>加工費合計</td>
+                    <td className="border border-black px-4 py-3" colSpan={2}>{Math.round(metrics.totalProcessingFee).toLocaleString("zh-TW")}</td>
+                  </tr>
+                </tbody>
+              </table>
 
-              <div className="grid grid-cols-2 gap-6">
-                <PrintSectionCard title="公式區">
-                  <div className="space-y-3">
-                    {printFormulas.map(formula => (
-                      <div key={formula.label} className="border border-black px-4 py-3">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">{formula.label}</p>
-                        <p className="mt-2 text-sm leading-6">{formula.expression}</p>
-                        <p className="mt-2 text-base font-black">= {formula.result}</p>
-                      </div>
-                    ))}
+              <div className="grid grid-cols-3 gap-4">
+                {printFormulas.map(formula => (
+                  <div key={formula.label} className="border border-black px-4 py-4">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-neutral-500">{formula.label}</p>
+                    <p className="mt-4 whitespace-pre-wrap text-base leading-8">{formula.expression}</p>
+                    <p className="mt-3 text-xl font-black tracking-tight">{formula.result}</p>
                   </div>
-                </PrintSectionCard>
+                ))}
+              </div>
 
-                <PrintSectionCard title="備註與簽核">
-                  <div className="border border-black px-4 py-4 text-sm leading-7">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-neutral-500">備註</p>
-                    <p className="mt-2 min-h-28 whitespace-pre-wrap">{form.note || "—"}</p>
-                  </div>
-                  <div className="mt-4 grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-[1.3fr_1fr] gap-4">
+                <div className="border border-black px-5 py-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-neutral-500">Note / 備註</p>
+                  <p className="mt-5 min-h-32 whitespace-pre-wrap text-base leading-8">{form.note || "本月份無額外備註。"}</p>
+                </div>
+                <div className="border border-black px-5 py-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-neutral-500">Approval / 簽核</p>
+                  <div className="mt-8 grid grid-cols-3 gap-4">
                     {printSignatures.map(signature => (
-                      <div key={signature} className="border border-black px-4 pb-3 pt-12 text-center">
-                        <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">{signature}</p>
+                      <div key={signature} className="space-y-12 text-center">
+                        <p className="border-t border-black pt-2 text-base">{signature}</p>
+                        <p className="border-t border-dashed border-neutral-500 pt-2 text-sm text-neutral-500">簽章</p>
                       </div>
                     ))}
                   </div>
-                </PrintSectionCard>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-3">
+                <PrintFooterMetric label="進貨成本（元/噸）" value={formatNumber(metrics.purchaseCostPerTon)} />
+                <PrintFooterMetric label="總運費" value={Math.round(metrics.totalFreight).toLocaleString("zh-TW")} />
+                <PrintFooterMetric label="總加工費" value={Math.round(metrics.totalProcessingFee).toLocaleString("zh-TW")} />
+                <PrintFooterMetric label="銷貨成本" value={Math.round(metrics.salesCost).toLocaleString("zh-TW")} inverted />
+              </div>
+
+              <div className="flex items-center justify-between text-sm text-neutral-600">
+                <p>加工明細、公式說明與簽核欄</p>
+                <p>02 / 02</p>
               </div>
             </div>
           </article>
@@ -563,35 +657,20 @@ function MetricBox({ label, value, description }: { label: string; value: string
   );
 }
 
-function PrintSectionCard({ title, children }: { title: string; children: ReactNode }) {
+function PrintTableHeading({ english, chinese, note }: { english: string; chinese: string; note: string }) {
   return (
-    <section className="border border-black px-5 py-4">
-      <div className="border-b border-black pb-3">
-        <p className="text-xs font-bold uppercase tracking-[0.24em] text-neutral-500">{title}</p>
-      </div>
-      <div className="pt-4">{children}</div>
-    </section>
-  );
-}
-
-function PrintDataGrid({ rows }: { rows: Array<{ label: string; value: string }> }) {
-  return (
-    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-      {rows.map(row => (
-        <div key={row.label} className="border-b border-dashed border-neutral-400 pb-2">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-neutral-500">{row.label}</p>
-          <p className="mt-2 text-sm font-bold">{row.value}</p>
-        </div>
-      ))}
+    <div className="flex items-end justify-between gap-6">
+      <p className="text-[18px] font-black uppercase tracking-[0.26em]">{english} / {chinese}</p>
+      <p className="text-sm text-neutral-500">{note}</p>
     </div>
   );
 }
 
-function PrintHighlightBox({ label, value, inverted = false }: { label: string; value: string; inverted?: boolean }) {
+function PrintFooterMetric({ label, value, inverted = false }: { label: string; value: string; inverted?: boolean }) {
   return (
-    <div className={`border px-4 py-4 ${inverted ? "border-black bg-black text-white" : "border-black bg-neutral-50 text-black"}`}>
-      <p className={`text-[11px] uppercase tracking-[0.18em] ${inverted ? "text-white/70" : "text-neutral-500"}`}>{label}</p>
-      <p className="mt-2 text-lg font-black tracking-tight">{value}</p>
+    <div className={`border border-black px-4 py-4 ${inverted ? "bg-black text-white" : "bg-white text-black"}`}>
+      <p className={`text-[11px] uppercase tracking-[0.18em] ${inverted ? "text-white/75" : "text-neutral-500"}`}>{label}</p>
+      <p className="mt-4 text-[28px] font-black tracking-tight">{value}</p>
     </div>
   );
 }

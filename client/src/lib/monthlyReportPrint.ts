@@ -40,12 +40,12 @@ export function getMonthlyReportPrintSummaryCards(metrics: MonthlyMetrics) {
 export function getMonthlyReportPrintFreightFields(form: MonthlyReportFormValues, metrics: MonthlyMetrics): PrintField[] {
   return [
     { label: "板運噸數", value: `${formatNumber(form.flatbedWeightTons)} 噸` },
-    { label: "板車運", value: formatCurrency(form.flatbedFreight) },
+    { label: "板車運費", value: formatCurrency(form.flatbedFreight) },
     { label: "吊運噸數", value: `${formatNumber(form.craneWeightTons)} 噸` },
     { label: "每噸費用", value: `${formatCurrency(form.craneFeePerTon)} / 噸` },
-    { label: "吊卡運", value: formatCurrency(metrics.craneFreight) },
+    { label: "吊卡運費", value: formatCurrency(metrics.craneFreight) },
     { label: "不運噸數", value: `${formatNumber(form.selfHaulWeightTons)} 噸` },
-    { label: "不含運", value: formatCurrency(0) },
+    { label: "不運費用", value: formatCurrency(0) },
     { label: "總運費", value: formatCurrency(metrics.totalFreight) },
   ];
 }
@@ -53,7 +53,7 @@ export function getMonthlyReportPrintFreightFields(form: MonthlyReportFormValues
 export function getMonthlyReportPrintFormulas(form: MonthlyReportFormValues, metrics: MonthlyMetrics): PrintFormula[] {
   return [
     {
-      label: "吊卡運公式",
+      label: "吊卡運費公式",
       expression: `${formatNumber(form.craneWeightTons)} × ${formatCurrency(form.craneFeePerTon)}`,
       result: formatCurrency(metrics.craneFreight),
     },

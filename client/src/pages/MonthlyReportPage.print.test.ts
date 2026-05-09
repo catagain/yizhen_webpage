@@ -73,8 +73,9 @@ describe("MonthlyReportPage print helpers", () => {
     const formulas = getMonthlyReportPrintFormulas(form, metrics);
 
     expect(formulas).toHaveLength(3);
-    expect(formulas[0]).toMatchObject({ label: "吊卡運費公式" });
+    expect(formulas[0]).toMatchObject({ label: "吊卡運公式" });
     expect(formulas[1].result).toContain("14,028.000 元/噸");
+    expect(formulas[2]).toMatchObject({ label: "毛利公式" });
     expect(formulas[2].result).toContain("6,028.000 元/噸");
   });
 

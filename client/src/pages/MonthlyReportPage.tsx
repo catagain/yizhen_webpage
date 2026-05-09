@@ -237,7 +237,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-none border-foreground bg-card shadow-panel print:shadow-none">
+      <Card className="screen-only rounded-none border-foreground bg-card shadow-panel print:hidden print:shadow-none">
         <CardHeader className="border-b border-border">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="space-y-3">

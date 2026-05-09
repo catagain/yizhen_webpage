@@ -86,6 +86,18 @@ describe("MonthlyReportPrintDocument", () => {
       processingEntriesForPrint: form.processingEntries,
     })
   );
+  const blankNoteForm = { ...form, note: "" };
+  const blankNoteMarkup = renderToStaticMarkup(
+    createElement(MonthlyReportPrintDocument, {
+      monthKey: "2026-01",
+      form: blankNoteForm,
+      metrics: computeMonthlyMetrics(blankNoteForm),
+      printSummaryCards: getMonthlyReportPrintSummaryCards(computeMonthlyMetrics(blankNoteForm)),
+      printFormulas: getMonthlyReportPrintFormulas(blankNoteForm, computeMonthlyMetrics(blankNoteForm)),
+      printSignatures: getMonthlyReportPrintSignatures(),
+      processingEntriesForPrint: blankNoteForm.processingEntries,
+    })
+  );
 
   it("renders exactly two print pages with fixed page numbering", () => {
     const pageMatches = markup.match(/data-testid="monthly-report-print-page-[12]"/g) ?? [];
@@ -131,6 +143,8 @@ describe("MonthlyReportPrintDocument", () => {
     expect(markup).toContain("本月利潤 Net Profit");
     expect(markup).toContain("NOTE / 備註");
     expect(markup).toContain("APPROVAL / 簽核");
+    expect(markup).not.toContain("這一頁專門放主檔參數");
+    expect(markup).not.toContain("這個區塊維持固定高度");
   });
 
   it("keeps the major print sections in the mockup order", () => {
@@ -152,6 +166,13 @@ describe("MonthlyReportPrintDocument", () => {
   it("captures the overall print-document structure with a stable leading fragment", () => {
     expect(markup.startsWith("<section class=\"print-only hidden print:block\"><div class=\"mx-auto w-full max-w-[820px] text-black\"><article class=\"break-after-page overflow-hidden bg-white px-3 py-4\" data-testid=\"monthly-report-print-page-1\">" )).toBe(true);
     expect(markup).toContain("data-testid=\"monthly-report-print-page-2\"");
+  });
+
+  it("keeps the note block visually present but empty when the report has no note", () => {
+    const blankNoteBlock = getSectionSlice(blankNoteMarkup, 'data-section="page-2-note-block"', '</div><div class="border border-black px-4 py-3" data-section="page-2-approval-block">');
+
+    expect(blankNoteBlock).toContain("NOTE / 備註");
+    expect(blankNoteBlock).not.toContain("本月份無額外備註");
   });
 
   it("renders only print document markup without editor chrome", () => {

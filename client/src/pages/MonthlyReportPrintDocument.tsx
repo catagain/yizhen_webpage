@@ -78,11 +78,8 @@ export function MonthlyReportPrintDocument({
 
             <div className="h-[3px] w-full bg-black" />
 
-            <div className="grid grid-cols-[1.55fr_1fr] gap-3">
-              <div className="border border-black bg-[#f7f5eb] px-4 py-3 text-[13px] leading-7">
-                這一頁專門放主檔參數，讓任何人拿到紙本時，先看得到進貨、出貨、運費原始輸入與核心結果，不需要翻頁去找母數。版面上保留大數字淨利卡，方便列印核對時先抓重點。
-              </div>
-              <div className="border border-black bg-black px-4 py-3 text-white" data-section="page-1-net-profit-card">
+            <div className="flex justify-end">
+              <div className="w-[236px] border border-black bg-black px-4 py-3 text-white" data-section="page-1-net-profit-card">
                 <p className="text-[10px] uppercase tracking-[0.28em] text-white/70">本月利潤 Net Profit</p>
                 <p className="mt-4 text-[32px] font-black leading-none tracking-tight">{formatPrintCurrency(metrics.netProfit)}</p>
               </div>
@@ -263,7 +260,7 @@ export function MonthlyReportPrintDocument({
             <div className="grid grid-cols-[1.2fr_0.88fr] gap-2.5">
               <div className="border border-black px-4 py-3" data-section="page-2-note-block">
                 <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-neutral-700">NOTE / 備註</p>
-                <p className="mt-3.5 h-[92px] overflow-hidden whitespace-pre-wrap text-[12px] leading-6 text-neutral-800">{form.note || "本月份無額外備註。這個區塊維持固定高度，即使沒有內容也不會讓第二頁版面被撐開。"}</p>
+                <p className="mt-3.5 h-[92px] overflow-hidden whitespace-pre-wrap text-[12px] leading-6 text-neutral-800">{form.note || ""}</p>
               </div>
               <div className="border border-black px-4 py-3" data-section="page-2-approval-block">
                 <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-neutral-700">APPROVAL / 簽核</p>

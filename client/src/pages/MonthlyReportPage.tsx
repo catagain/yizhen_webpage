@@ -428,10 +428,10 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                 <CardTitle className="text-xl font-black">結果</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 pt-6">
-                <MetricBox label="銷貨成本" value={formatCurrency(metrics.salesCost)} description="計算式為總運費 + 總加工費" />
-                <MetricBox label="出貨每噸均價" value={`${formatNumber(metrics.shipmentUnitPrice)} 元/噸`} description="計算式為（出貨總金額 - 總加工費 - 總運費）/ 出貨數量" />
-                <MetricBox label="毛利" value={`${formatNumber(metrics.grossProfitPerTon)} 元/噸`} description="計算式為出貨每噸均價 - 進貨每噸均價" />
-                <MetricBox label="本月利潤" value={formatCurrency(metrics.netProfit)} />
+                <MetricBox label="加工運費成本" value={formatCurrency(metrics.salesCost)} description="計算式為總運費 + 總加工費" />
+                <MetricBox label="每噸淨售價" value={`${formatNumber(metrics.shipmentUnitPrice)} 元/噸`} description="計算式為（出貨總金額 - 總加工費 - 總運費）/ 出貨數量" />
+                <MetricBox label="每噸毛利" value={`${formatNumber(metrics.grossProfitPerTon)} 元/噸`} description="計算式為每噸淨售價 - 進貨成本（元/噸）" />
+                <MetricBox label="本月營業毛利" value={formatCurrency(metrics.netProfit)} />
               </CardContent>
             </Card>
 
@@ -440,7 +440,7 @@ export default function MonthlyReportPage({ monthKey }: { monthKey: string }) {
                 <CardTitle className="text-xl font-black">備註</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
-                <Textarea value={form.note} onChange={event => updateField("note", event.target.value)} className={`min-h-32 ${REPORT_INPUT_CLASS_NAME}`} placeholder="例如：春節延後請款，導致本月利潤偏高。" />
+                <Textarea value={form.note} onChange={event => updateField("note", event.target.value)} className={`min-h-32 ${REPORT_INPUT_CLASS_NAME}`} placeholder="例如：春節延後請款，導致本月營業毛利偏高。" />
               </CardContent>
             </Card>
           </div>

@@ -30,10 +30,10 @@ type PrintFormula = {
 
 export function getMonthlyReportPrintSummaryCards(metrics: MonthlyMetrics) {
   return [
-    { label: "銷貨成本", value: formatCurrency(metrics.salesCost), tone: "light" as const },
-    { label: "出貨每噸均價", value: `${formatNumber(metrics.shipmentUnitPrice)} 元/噸`, tone: "light" as const },
-    { label: "毛利（元/噸）", value: `${formatNumber(metrics.grossProfitPerTon)} 元/噸`, tone: "light" as const },
-    { label: "本月利潤", value: formatCurrency(metrics.netProfit), tone: "dark" as const },
+    { label: "加工運費成本", value: formatCurrency(metrics.salesCost), tone: "light" as const },
+    { label: "每噸淨售價", value: `${formatNumber(metrics.shipmentUnitPrice)} 元/噸`, tone: "light" as const },
+    { label: "每噸毛利", value: `${formatNumber(metrics.grossProfitPerTon)} 元/噸`, tone: "light" as const },
+    { label: "本月營業毛利", value: formatCurrency(metrics.netProfit), tone: "dark" as const },
   ];
 }
 
@@ -58,12 +58,12 @@ export function getMonthlyReportPrintFormulas(form: MonthlyReportFormValues, met
       result: formatCurrency(metrics.craneFreight),
     },
     {
-      label: "銷貨成本公式",
+      label: "每噸淨售價公式",
       expression: `（${formatCurrency(form.shipmentAmount)} − ${formatCurrency(metrics.totalProcessingFee)} − ${formatCurrency(metrics.totalFreight)}）÷ ${formatNumber(form.shipmentQuantity)}`,
       result: `${formatNumber(metrics.shipmentUnitPrice)} 元/噸`,
     },
     {
-      label: "毛利公式",
+      label: "每噸毛利公式",
       expression: `${formatNumber(metrics.shipmentUnitPrice)} − ${formatNumber(metrics.purchaseCostPerTon)}`,
       result: `${formatNumber(metrics.grossProfitPerTon)} 元/噸`,
     },

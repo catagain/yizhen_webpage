@@ -80,7 +80,7 @@ export function MonthlyReportPrintDocument({
 
             <div className="flex justify-end">
               <div className="w-[236px] border border-black bg-black px-4 py-3 text-white" data-section="page-1-net-profit-card">
-                <p className="text-[10px] uppercase tracking-[0.28em] text-white/70">本月利潤 Net Profit</p>
+                <p className="text-[10px] uppercase tracking-[0.28em] text-white/70">本月營業毛利 Operating Gross Margin</p>
                 <p className="mt-4 text-[32px] font-black leading-none tracking-tight">{formatPrintCurrency(metrics.netProfit)}</p>
               </div>
             </div>
@@ -279,7 +279,7 @@ export function MonthlyReportPrintDocument({
               <PrintFooterMetric label="進貨成本（元/噸）" value={formatNumber(metrics.purchaseCostPerTon)} />
               <PrintFooterMetric label="總運費" value={Math.round(metrics.totalFreight).toLocaleString("zh-TW")} />
               <PrintFooterMetric label="總加工費" value={Math.round(metrics.totalProcessingFee).toLocaleString("zh-TW")} />
-              <PrintFooterMetric label="銷貨成本" value={Math.round(metrics.salesCost).toLocaleString("zh-TW")} inverted />
+              <PrintFooterMetric label="加工運費成本" value={Math.round(metrics.salesCost).toLocaleString("zh-TW")} inverted />
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-neutral-600">

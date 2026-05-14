@@ -67,7 +67,7 @@ export default function DashboardLayout({
             </p>
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl">登入後繼續使用月度核算系統</h1>
             <p className="mt-4 max-w-lg text-sm leading-7 text-muted-foreground">
-              系統以月份月報為核心，整合進貨、出貨、運費、加工與淨利潤計算。請先登入，再進入儀表板與月報頁面。
+              系統以月份月報為核心，整合進貨、出貨、運費、加工與營業毛利計算。請先登入，再進入儀表板與月報頁面。
             </p>
             <Button
               className="mt-8 h-12 rounded-none border border-foreground px-6 text-sm font-bold tracking-[0.18em] uppercase"
@@ -113,8 +113,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </SidebarTrigger>
             <div className="min-w-0 group-data-[collapsible=icon]:hidden">
               <p className="text-[11px] uppercase tracking-[0.45em] text-muted-foreground">YIZHEN</p>
-              <h2 className="mt-2 text-lg font-black tracking-tight">成本與利潤核算系統</h2>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">以月報為主體，統一噸數口徑與利潤計算鏈。</p>
+              <h2 className="mt-2 text-lg font-black tracking-tight">成本與毛利核算系統</h2>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">以月報為主體，統一噸數口徑與毛利計算鏈。</p>
             </div>
           </div>
         </SidebarHeader>

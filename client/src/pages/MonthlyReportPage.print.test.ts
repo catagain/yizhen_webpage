@@ -42,12 +42,13 @@ describe("MonthlyReportPage print helpers", () => {
 
   const metrics = computeMonthlyMetrics(form);
 
-  it("returns four summary cards including net profit", () => {
+  it("returns four summary cards including the renamed operating metrics", () => {
     const cards = getMonthlyReportPrintSummaryCards(metrics);
 
     expect(cards).toHaveLength(4);
+    expect(cards.map(card => card.label)).toEqual(["加工運費成本", "每噸淨售價", "每噸毛利", "本月營業毛利"]);
     expect(cards.at(-1)).toMatchObject({
-      label: "本月利潤",
+      label: "本月營業毛利",
       tone: "dark",
     });
   });
@@ -69,13 +70,14 @@ describe("MonthlyReportPage print helpers", () => {
     expect(fields.find(field => field.label === "吊卡運費")?.value).toContain("312,000");
   });
 
-  it("builds three formulas including crane freight and gross profit", () => {
+  it("builds three formulas including the renamed net selling price and gross margin labels", () => {
     const formulas = getMonthlyReportPrintFormulas(form, metrics);
 
     expect(formulas).toHaveLength(3);
     expect(formulas[0]).toMatchObject({ label: "吊卡運公式" });
+    expect(formulas[1]).toMatchObject({ label: "每噸淨售價公式" });
     expect(formulas[1].result).toContain("14,028.000 元/噸");
-    expect(formulas[2]).toMatchObject({ label: "毛利公式" });
+    expect(formulas[2]).toMatchObject({ label: "每噸毛利公式" });
     expect(formulas[2].result).toContain("6,028.000 元/噸");
   });
 

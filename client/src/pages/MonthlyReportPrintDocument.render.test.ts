@@ -138,9 +138,9 @@ describe("MonthlyReportPrintDocument", () => {
     expect(pageTwoSummary.match(/data-print-card="summary"/g) ?? []).toHaveLength(4);
     expect(pageTwoFormulas.match(/data-print-card="formula"/g) ?? []).toHaveLength(3);
     expect(pageTwoFormulas).toContain("吊卡運公式");
-    expect(pageTwoFormulas).toContain("銷貨成本公式");
-    expect(pageTwoFormulas).toContain("毛利公式");
-    expect(markup).toContain("本月利潤 Net Profit");
+    expect(pageTwoFormulas).toContain("每噸淨售價公式");
+    expect(pageTwoFormulas).toContain("每噸毛利公式");
+    expect(markup).toContain("本月營業毛利 Operating Gross Margin");
     expect(markup).toContain("NOTE / 備註");
     expect(markup).toContain("APPROVAL / 簽核");
     expect(markup).not.toContain("這一頁專門放主檔參數");

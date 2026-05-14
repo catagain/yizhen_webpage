@@ -75,6 +75,10 @@ describe("MonthlyReportPrintDocument", () => {
     expect(pageMatches).toHaveLength(2);
     expect(markup).toContain("第 1 頁 / 共 2 頁");
     expect(markup).toContain("第 2 頁 / 共 2 頁");
+    expect(markup).toContain("加工運費成本");
+    expect(markup).toContain("每噸淨售價");
+    expect(markup).toContain("每噸毛利");
+    expect(markup).toContain("本月營業毛利 Operating Gross Margin");
   });
 
   it("keeps the page-one shipment table aligned with the mockup structure", () => {

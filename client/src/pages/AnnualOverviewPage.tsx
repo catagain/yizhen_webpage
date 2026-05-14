@@ -71,7 +71,7 @@ export default function AnnualOverviewPage() {
           <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground">Annual Profit Trends</p>
           <CardTitle className="text-4xl font-black tracking-tight">年度彙總</CardTitle>
           <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-            此頁同時呈現淨利潤與毛利走勢。淨利潤圖以月度金額比較，毛利圖則沿用既有公式，顯示每噸毛利的時間變化。
+            此頁同時呈現營業毛利與每噸毛利走勢。營業毛利圖以月度金額比較，每噸毛利圖則沿用既有每噸毛利公式，顯示單噸獲利的時間變化。
           </p>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 pt-6 md:flex-row md:items-end md:justify-between">
@@ -100,7 +100,7 @@ export default function AnnualOverviewPage() {
       <section className="grid gap-6 md:grid-cols-3">
         <Card className="rounded-none border-border bg-card">
           <CardHeader>
-            <CardTitle className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">年度累積淨利潤</CardTitle>
+            <CardTitle className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">年度累積營業毛利</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-black tracking-tight">
@@ -132,7 +132,7 @@ export default function AnnualOverviewPage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">
-        <TrendChartCard title="淨利潤走勢" description="橫軸為月份，縱軸為淨利潤金額。">
+        <TrendChartCard title="營業毛利走勢" description="橫軸為月份，縱軸為營業毛利金額。">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
               <CartesianGrid strokeDasharray="2 2" stroke="var(--color-grid)" />
@@ -150,7 +150,7 @@ export default function AnnualOverviewPage() {
                   borderRadius: 0,
                 }}
                 labelFormatter={label => `${year}-${label}`}
-                formatter={(value: number) => [formatCurrency(value), "淨利潤"]}
+                formatter={(value: number) => [formatCurrency(value), "營業毛利"]}
               />
               <Line
                 type="monotone"
@@ -164,7 +164,7 @@ export default function AnnualOverviewPage() {
           </ResponsiveContainer>
         </TrendChartCard>
 
-        <TrendChartCard title="毛利走勢" description="橫軸為月份，縱軸為每噸毛利，沿用既有毛利公式。">
+        <TrendChartCard title="每噸毛利走勢" description="橫軸為月份，縱軸為每噸毛利，沿用既有每噸毛利公式。">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
               <CartesianGrid strokeDasharray="2 2" stroke="var(--color-grid)" />
@@ -177,7 +177,7 @@ export default function AnnualOverviewPage() {
                   borderRadius: 0,
                 }}
                 labelFormatter={label => `${year}-${label}`}
-                formatter={(value: number) => [`${formatPerTonTick(value)} 元/噸`, "毛利"]}
+                formatter={(value: number) => [`${formatPerTonTick(value)} 元/噸`, "每噸毛利"]}
               />
               <Line
                 type="monotone"
@@ -205,11 +205,11 @@ export default function AnnualOverviewPage() {
                   <p className="mt-2 text-lg font-black">{month.monthKey}</p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">淨利潤</p>
+                  <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">營業毛利</p>
                   <p className="mt-2 text-lg font-black">{formatCurrency(month.netProfit)}</p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">毛利</p>
+                  <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">每噸毛利</p>
                   <p className="mt-2 text-lg font-black">{formatPerTonTick(month.grossProfitPerTon)} 元/噸</p>
                 </div>
                 <div>

@@ -39,7 +39,7 @@ export default function LoginPage() {
           <div>
             <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground">YIZHEN COSTING SYSTEM</p>
             <h1 className="mt-6 max-w-3xl text-5xl font-black tracking-tight sm:text-6xl">
-              以月份為核心的成本與利潤核算系統
+              以月份為核心的成本與毛利核算系統
             </h1>
             <p className="mt-6 max-w-2xl text-sm leading-8 text-muted-foreground">
               這個版本改為站內固定帳密登入，月報、年度彙總與鐵工名單都會在登入後開放操作。加工輸入已不再包含自家欄位，月報也會支援永久刪除。
@@ -53,7 +53,7 @@ export default function LoginPage() {
             </div>
             <div className="border border-border bg-background p-4">
               <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">Annual View</p>
-              <p className="mt-3 text-2xl font-black">年度淨利</p>
+              <p className="mt-3 text-2xl font-black">年度毛利</p>
             </div>
             <div className="border border-border bg-background p-4">
               <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">Worker Catalog</p>

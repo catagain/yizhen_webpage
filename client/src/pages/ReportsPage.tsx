@@ -106,11 +106,11 @@ export default function ReportsPage() {
         </Card>
         <Card className="rounded-none border-border bg-card">
           <CardHeader>
-            <CardTitle className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">年度淨利潤</CardTitle>
+            <CardTitle className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">年度營業毛利</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-black tracking-tight">{formatCurrency(totals.annualNetProfit)}</p>
-            <p className="mt-2 text-sm text-muted-foreground">此數值為目前列表內月報的淨利潤合計。</p>
+            <p className="mt-2 text-sm text-muted-foreground">此數值為目前列表內月報的營業毛利合計。</p>
           </CardContent>
         </Card>
       </section>
@@ -131,7 +131,7 @@ export default function ReportsPage() {
                   <div className="min-w-0">
                     <p className="text-sm font-bold">{report.monthKey}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      淨利潤 {formatCurrency(report.metrics.netProfit)} ｜ 銷貨成本 {formatCurrency(report.metrics.salesCost)} ｜ 毛利 {report.metrics.grossProfitPerTon.toFixed(3)} 元/噸
+                      營業毛利 {formatCurrency(report.metrics.netProfit)} ｜ 加工運費成本 {formatCurrency(report.metrics.salesCost)} ｜ 每噸毛利 {report.metrics.grossProfitPerTon.toFixed(3)} 元/噸
                     </p>
                   </div>
                   <ArrowRight className="h-4 w-4 shrink-0" />

@@ -29,23 +29,23 @@ export default function Home() {
   const kpis = useMemo(() => {
     if (!latestReport) {
       return [
-        { label: "最新月報淨利潤", value: "尚無資料" },
-        { label: "最新月報毛利（元/噸）", value: "尚無資料" },
-        { label: "最新月報銷貨成本", value: "尚無資料" },
+        { label: "最新月報營業毛利", value: "尚無資料" },
+        { label: "最新月報每噸毛利", value: "尚無資料" },
+        { label: "最新月報加工運費成本", value: "尚無資料" },
       ];
     }
 
     return [
       {
-        label: `最新月報淨利潤｜${latestReport.monthKey}`,
+        label: `最新月報營業毛利｜${latestReport.monthKey}`,
         value: formatCurrency(latestReport.metrics.netProfit),
       },
       {
-        label: "最新月報毛利（元/噸）",
+        label: "最新月報每噸毛利",
         value: formatNumber(latestReport.metrics.grossProfitPerTon),
       },
       {
-        label: "最新月報銷貨成本",
+        label: "最新月報加工運費成本",
         value: formatCurrency(latestReport.metrics.salesCost),
       },
     ];
@@ -59,7 +59,7 @@ export default function Home() {
             <p className="text-[11px] uppercase tracking-[0.5em] text-muted-foreground">Monthly Costing Core</p>
             <div className="space-y-3">
               <CardTitle className="max-w-4xl text-4xl font-black tracking-tight sm:text-5xl">
-                以月份為主體的成本與利潤核算儀表板
+                以月份為主體的成本與毛利核算儀表板
               </CardTitle>
               <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
                 核心流程固定為進貨、出貨、運費、加工與結果五大區塊，全部統一以噸數口徑與三位小數規則處理，避免手算偏差與月度比較失真。
@@ -97,7 +97,7 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-bold">年度彙總</p>
-                    <p className="mt-1 text-xs text-muted-foreground">比較淨利潤月增減與年度走勢。</p>
+                    <p className="mt-1 text-xs text-muted-foreground">比較營業毛利月增減與年度走勢。</p>
                   </div>
                   <TrendingUp className="h-4 w-4" />
                 </div>
@@ -121,7 +121,7 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">{currentYear} 年累積淨利潤</p>
+              <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">{currentYear} 年累積營業毛利</p>
               <p className="mt-4 text-3xl font-black tracking-tight">
                 {annualSummaryQuery.data ? formatCurrency(annualSummaryQuery.data.annualNetProfit) : "載入中"}
               </p>
@@ -155,7 +155,7 @@ export default function Home() {
                   <div>
                     <p className="text-sm font-bold">{report.monthKey}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      淨利潤 {formatCurrency(report.metrics.netProfit)} ｜ 毛利 {formatNumber(report.metrics.grossProfitPerTon)} 元/噸
+                      營業毛利 {formatCurrency(report.metrics.netProfit)} ｜ 每噸毛利 {formatNumber(report.metrics.grossProfitPerTon)} 元/噸
                     </p>
                   </div>
                   <ArrowRight className="h-4 w-4" />
@@ -182,7 +182,7 @@ export default function Home() {
               不運費用固定為 0；加工費由四組鐵工費用與自家人力成本共同構成，自家人力單價可依月份調整並跟著月報保存。
             </p>
             <p>
-              年度彙總頁面的漲幅比較指標以淨利潤為主，會同時顯示相較上月的增減金額與增減百分比。
+              年度彙總頁面的漲幅比較指標以營業毛利為主，會同時顯示相較上月的增減金額與增減百分比。
             </p>
           </CardContent>
         </Card>

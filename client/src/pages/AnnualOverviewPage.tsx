@@ -40,6 +40,7 @@ export function formatPerTonTick(value: number) {
 }
 
 export const NET_PROFIT_Y_AXIS_TICKS = [1000000, 5000000, 10000000, 15000000, 20000000] as const;
+export const TREND_LINE_RED = "#b91c1c";
 
 type AnnualChartMonth = {
   monthKey: string;
@@ -155,10 +156,10 @@ export default function AnnualOverviewPage() {
               <Line
                 type="monotone"
                 dataKey="netProfit"
-                stroke="var(--color-chart-1)"
+                stroke={TREND_LINE_RED}
                 strokeWidth={3}
-                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-chart-1)" }}
-                activeDot={{ r: 5 }}
+                dot={{ r: 3, strokeWidth: 0, fill: TREND_LINE_RED }}
+                activeDot={{ r: 5, fill: TREND_LINE_RED, stroke: TREND_LINE_RED }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -182,10 +183,10 @@ export default function AnnualOverviewPage() {
               <Line
                 type="monotone"
                 dataKey="grossProfitPerTon"
-                stroke="var(--color-chart-2)"
+                stroke={TREND_LINE_RED}
                 strokeWidth={3}
-                dot={{ r: 3, strokeWidth: 0, fill: "var(--color-chart-2)" }}
-                activeDot={{ r: 5 }}
+                dot={{ r: 3, strokeWidth: 0, fill: TREND_LINE_RED }}
+                activeDot={{ r: 5, fill: TREND_LINE_RED, stroke: TREND_LINE_RED }}
               />
             </LineChart>
           </ResponsiveContainer>

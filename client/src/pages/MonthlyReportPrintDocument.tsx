@@ -185,9 +185,19 @@ export function MonthlyReportPrintDocument({
             </table>
 
             <div className="grid grid-cols-4 gap-2.5" data-section="page-1-summary-cards">
-              {printSummaryCards.map(card => (
-                <PrintFooterMetric key={card.label} label={card.label} value={card.value.replace("NT$", "")} inverted={card.tone === "dark"} />
-              ))}
+              {printSummaryCards.map(card => {
+                const detail = card.label === "每噸淨售價" ? `進貨成本（元/噸） ${formatNumber(metrics.purchaseCostPerTon)}` : undefined;
+
+                return (
+                  <PrintFooterMetric
+                    key={card.label}
+                    label={card.label}
+                    value={card.value.replace("NT$", "")}
+                    detail={detail}
+                    inverted={card.tone === "dark"}
+                  />
+                );
+              })}
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-neutral-600">
@@ -302,11 +312,24 @@ function PrintTableHeading({ english, chinese, note }: { english: string; chines
   );
 }
 
-function PrintFooterMetric({ label, value, inverted = false }: { label: string; value: string; inverted?: boolean }) {
+function PrintFooterMetric({
+  label,
+  value,
+  detail,
+  inverted = false,
+}: {
+  label: string;
+  value: string;
+  detail?: string;
+  inverted?: boolean;
+}) {
   return (
     <div className={`flex min-h-[78px] flex-col justify-between border border-black px-3.5 py-3 ${inverted ? "bg-black text-white" : "bg-white text-black"}`} data-print-card="summary">
       <p className={`text-[10px] uppercase tracking-[0.18em] ${inverted ? "text-white/75" : "text-neutral-500"}`}>{label}</p>
-      <p className="mt-2 text-[18px] font-black leading-tight tracking-tight">{value}</p>
+      <div className="mt-2 space-y-1">
+        <p className="text-[18px] font-black leading-tight tracking-tight">{value}</p>
+        {detail ? <p className={`text-[10px] leading-4 ${inverted ? "text-white/75" : "text-neutral-600"}`}>{detail}</p> : null}
+      </div>
     </div>
   );
 }

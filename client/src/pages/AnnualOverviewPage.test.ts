@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   NET_PROFIT_Y_AXIS_TICKS,
+  TREND_LINE_RED,
   buildAnnualChartData,
   formatChartYAxisTick,
   formatPerTonTick,
@@ -36,5 +37,9 @@ describe("AnnualOverviewPage chart helpers", () => {
       { monthKey: "01", netProfit: 1200000, grossProfitPerTon: 4500.125 },
       { monthKey: "02", netProfit: 1500000, grossProfitPerTon: 4700.5 },
     ]);
+  });
+
+  it("uses the requested red color for both trend lines", () => {
+    expect(TREND_LINE_RED).toBe("#b91c1c");
   });
 });

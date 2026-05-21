@@ -135,6 +135,8 @@ describe("MonthlyReportPrintDocument", () => {
     expect(markup).toContain("data-section=\"page-2-note-block\"");
     expect(markup).toContain("data-section=\"page-2-approval-block\"");
     expect(pageOneSummary.match(/data-print-card="summary"/g) ?? []).toHaveLength(4);
+    expect(pageOneSummary).toContain("每噸淨售價");
+    expect(pageOneSummary).toContain("進貨成本（元/噸）");
     expect(pageTwoSummary.match(/data-print-card="summary"/g) ?? []).toHaveLength(4);
     expect(pageTwoFormulas.match(/data-print-card="formula"/g) ?? []).toHaveLength(3);
     expect(pageTwoFormulas).toContain("吊卡運公式");

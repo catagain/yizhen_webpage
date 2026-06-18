@@ -4,6 +4,7 @@ import axios, { type AxiosInstance } from "axios";
 import { parse as parseCookieHeader } from "cookie";
 import type { Request } from "express";
 import { SignJWT, jwtVerify } from "jose";
+import { webcrypto } from "node:crypto";
 import type { User } from "../../drizzle/schema";
 import * as db from "../db";
 import { ENV } from "./env";
@@ -14,6 +15,14 @@ import type {
   GetUserInfoWithJwtRequest,
   GetUserInfoWithJwtResponse,
 } from "./types/manusTypes";
+
+if (typeof globalThis.crypto === "undefined") {
+  Object.defineProperty(globalThis, "crypto", {
+    value: webcrypto,
+    configurable: true,
+  });
+}
+
 // Utility function
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.length > 0;

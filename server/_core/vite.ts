@@ -3,10 +3,36 @@ import fs from "fs";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
 import path from "path";
-import { createServer as createViteServer } from "vite";
-import viteConfig from "../../vite.config";
+import crypto from "node:crypto";
+import { fileURLToPath } from "url";
+
+const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
+
+function ensureCryptoHashCompat() {
+  // Node 18 does not provide crypto.hash used by Vite 7 internals.
+  const cryptoWithCompat = crypto as any;
+
+  if (typeof cryptoWithCompat.hash === "function") {
+    return;
+  }
+
+  cryptoWithCompat.hash = (algorithm: string, data: Buffer | string, outputEncoding: any = "hex") => {
+    const hash = crypto.createHash(algorithm).update(data);
+    if (outputEncoding === "buffer") {
+      return hash.digest();
+    }
+    if (typeof outputEncoding === "string") {
+      return hash.digest(outputEncoding as crypto.BinaryToTextEncoding);
+    }
+    return hash.digest("hex");
+  };
+}
 
 export async function setupVite(app: Express, server: Server) {
+  ensureCryptoHashCompat();
+  const { createServer: createViteServer } = await import("vite");
+  const { default: viteConfig } = await import("../../vite.config");
+
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
@@ -26,7 +52,7 @@ export async function setupVite(app: Express, server: Server) {
 
     try {
       const clientTemplate = path.resolve(
-        import.meta.dirname,
+        DIRNAME,
         "../..",
         "client",
         "index.html"
@@ -50,8 +76,8 @@ export async function setupVite(app: Express, server: Server) {
 export function serveStatic(app: Express) {
   const distPath =
     process.env.NODE_ENV === "development"
-      ? path.resolve(import.meta.dirname, "../..", "dist", "public")
-      : path.resolve(import.meta.dirname, "public");
+      ? path.resolve(DIRNAME, "../..", "dist", "public")
+      : path.resolve(DIRNAME, "public");
   if (!fs.existsSync(distPath)) {
     console.error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`
